@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Dashboard from './views/Dashboard.vue';
-import Projects from './views/Projects.vue';
+import Tasks from './views/Tasks.vue';
 import Team from './views/Team.vue';
 
 Vue.use(Router)
@@ -16,9 +16,9 @@ export default new Router({
       component: Dashboard
     },
     {
-      path: '/projects',
-      name: 'Projects',
-      component: Projects
+      path: '/tasks',
+      name: 'Tasks',
+      component: Tasks
     },
     {
       path: '/team',
