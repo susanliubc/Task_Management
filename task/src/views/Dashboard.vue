@@ -47,24 +47,23 @@
 </template>
 
 <script>
-
-  export default {
-    data() {
-      return {
-        tasks: [
-          {title: 'Design a new mockup for homepage ', member: 'Tom', dueDate: 'Jan 13th, 2019', status: 'Done'},
-          {title: 'Code up the homepage ', member: 'Mike', dueDate: 'Jan 21th, 2019', status: 'Progress'},
-          {title: 'Design a logo', member: 'Jack', dueDate: 'Jan 23th, 2019', status: 'Progress'},
-          {title: 'Add a survey form', member: 'Mickey', dueDate: 'Jan 30th, 2019', status: 'Todo'}
-        ]
-      }
-    },
-    methods: {
-      sortBy(prop) {
-        this.tasks.sort((a,b) => a[prop] < b[prop] ? -1 : 1);
-      }
+export default {
+  data() {
+    return {
+      tasks: [
+        {title: 'Design a new mockup for homepage ', member: 'Tom', dueDate: 'Jan 13th, 2019', status: 'Done'},
+        {title: 'Code up the homepage ', member: 'Mike', dueDate: 'Jan 21th, 2019', status: 'Progress'},
+        {title: 'Design a logo', member: 'Jack', dueDate: 'Jan 23th, 2019', status: 'Progress'},
+        {title: 'Add a survey form', member: 'Mickey', dueDate: 'Jan 30th, 2019', status: 'Todo'}
+      ]
+    }
+  },
+  methods: {
+    sortBy(prop) {
+      this.tasks.sort((a,b) => a[prop] < b[prop] ? -1 : 1);
     }
   }
+}
 </script>
 
 <style>

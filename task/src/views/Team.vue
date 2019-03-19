@@ -25,23 +25,21 @@
         </v-flex>
       </v-layout>
     </v-container>
-    
   </div>
 </template>
 
 <script>
-
-  export default {
-    data() {
-      return {
-        team: [
-          {name: 'Tom', role: 'UI Developer', avatar: '/avatar_1.png'},
-          {name: 'Cathy', role: 'Web Developer', avatar: '/avatar_2.png'},
-          {name: 'Mickey', role: 'Web Developer', avatar: '/avatar_3.png'},
-          {name: 'Jack', role: 'Designer', avatar: '/avatar_4.png'},
-          {name: 'Becky', role: 'Team Leader', avatar: '/avatar_5.png'},
-        ]
-      }
+export default {
+  data() {
+    return {
+      team: [
+        {name: 'Tom', role: 'UI Developer', avatar: '/avatar_1.png'},
+        {name: 'Cathy', role: 'Web Developer', avatar: '/avatar_2.png'},
+        {name: 'Mickey', role: 'Web Developer', avatar: '/avatar_3.png'},
+        {name: 'Jack', role: 'Designer', avatar: '/avatar_4.png'},
+        {name: 'Becky', role: 'Team Leader', avatar: '/avatar_5.png'},
+      ]
     }
   }
+}
 </script>
