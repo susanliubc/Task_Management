@@ -15,7 +15,7 @@
           <v-menu v-model="menu" :close-on-content-pick="false">
             <v-text-field label="Due Date" :value="formattedDate" :rules="inputRules" slot="activator" prepend-icon="date_range">
           </v-text-field>
-          <v-date-picker v-model="due"></v-date-picker>
+          <v-date-picker v-model="dueDate"></v-date-picker>
           </v-menu>
 
           <v-spacer></v-spacer>
@@ -54,7 +54,7 @@ export default {
           title: this.title, 
           content: this.content,
           dueDate: this.dueDate,
-          member: this.member,
+          member: 'Tom',
           status: 'Progress'
         };
         db.collection('tasks').add(task).then(() => {

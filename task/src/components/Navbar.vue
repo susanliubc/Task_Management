@@ -59,18 +59,18 @@
 <script>
 import Popup from './Popup.vue';
 
-    export default {
-        components: { Popup },
-        data () {
-            return {
-                drawer: false, 
-                links: [
-                    {icon:'dashboard', text:'Dashboard', route:'/'},
-                    {icon:'folder', text:'Tasks', route:'/tasks'},
-                    {icon:'person', text:'Team', route:'/team'}
-                ],
-                snackbar: false
-            }
+export default {
+    components: { Popup },
+    data () {
+        return {
+            drawer: false, 
+            links: [
+                {icon:'dashboard', text:'Dashboard', route:'/'},
+                {icon:'folder', text:'Tasks', route:'/tasks'},
+                {icon:'person', text:'Team', route:'/team'}
+            ],
+            snackbar: false
         }
     }
+}
 </script>

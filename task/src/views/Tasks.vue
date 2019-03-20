@@ -18,21 +18,31 @@
 </template>
 
 <script>
+import db from '@/fb';
+
 export default {
   data() {
     return {
-      tasks: [
-        {title: 'Design a new mockup for homepage ', member: 'Tom', dueDate: 'Jan 13th, 2019', status: 'Done', content: 'Include wireframes for the design to show the features of the new product'},
-        {title: 'Code up the homepage ', member: 'Mike', dueDate: 'Jan 21th, 2019', status: 'Progress', content: 'Use React.js and Materialize as front end frameworks for coding'},
-        {title: 'Design a logo', member: 'Jack', dueDate: 'Jan 23th, 2019', status: 'Progress', content: 'Apply logomakr as the tool to design a professional logo for the new product'},
-        {title: 'Add a survey form', member: 'Mickey', dueDate: 'Jan 30th, 2019', status: 'Todo', content: 'Add survey form to link to the backend database and server'}
-      ]
+      tasks: []
     }
   },
   computed: {
     myTasks() {
       return this.tasks.filter(task => task.member === 'Tom');
     }
+  },
+  created() {
+    db.collection('tasks').onSnapshot(res => {
+      const changes = res.docChanges();
+      changes.forEach(change => {
+        if(change.type === 'added') {
+          this.tasks.push({
+            ...change.doc.data(),
+            id: change.doc.id
+          })
+        }
+      })
+    })
   }
 }
 </script>
