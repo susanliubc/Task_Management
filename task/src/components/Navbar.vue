@@ -1,5 +1,9 @@
 <template>
     <nav>
+        <v-snackbar v-model="snackbar" :timeout="4000" top color="success">
+            <span>You have added a new task</span>
+            <v-btn flat color="white" @click="snackbar = false">Close</v-btn>
+        </v-snackbar>
         <v-toolbar flat app>
             <v-toolbar-side-icon class="blue-text" @click="drawer = !drawer">
             </v-toolbar-side-icon>
@@ -33,7 +37,7 @@
                     <p class="white--text text-xs-center subheading mt-1">Tom</p>
                 </v-flex>
                 <v-flex class="mt-2 mb-2">
-                    <Popup />
+                    <Popup @taskAdded="snackbar=true" />
                 </v-flex>
             </v-layout>
             <v-list>
@@ -55,17 +59,18 @@
 <script>
 import Popup from './Popup.vue';
 
-export default {
-    components: { Popup },
-    data () {
-        return {
-            drawer: false, 
-            links: [
-                {icon:'dashboard', text:'Dashboard', route:'/'},
-                {icon:'folder', text:'Tasks', route:'/tasks'},
-                {icon:'person', text:'Team', route:'/team'}
-            ]
+    export default {
+        components: { Popup },
+        data () {
+            return {
+                drawer: false, 
+                links: [
+                    {icon:'dashboard', text:'Dashboard', route:'/'},
+                    {icon:'folder', text:'Tasks', route:'/tasks'},
+                    {icon:'person', text:'Team', route:'/team'}
+                ],
+                snackbar: false
+            }
         }
     }
-}
 </script>
