@@ -23,7 +23,9 @@
                     </v-list-tile>
                 </v-list>
             </v-menu>
-            <v-btn flat color="blue">
+            <Login />
+            <Signup />
+            <v-btn flat color="blue" @submit.prevent="signOut">
                 <span>Sign Out</span>
                 <v-icon right>exit_to_app</v-icon>
             </v-btn>
@@ -58,9 +60,16 @@
 
 <script>
 import Popup from './Popup.vue';
+import Signup from './Signup.vue';
+import Login from './Login.vue';
+import firebase from '@/fb';
 
 export default {
-    components: { Popup },
+    components: { 
+        Popup,
+        Signup,
+        Login 
+    },
     data () {
         return {
             drawer: false, 
@@ -70,6 +79,11 @@ export default {
                 {icon:'person', text:'Team', route:'/team'}
             ],
             snackbar: false
+        }
+    },
+    methods: {
+        signOut() {
+            firebase.auth.signOut();
         }
     }
 }

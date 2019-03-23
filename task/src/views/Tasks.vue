@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import db from '@/fb';
+import firebase from '@/fb';
 
 export default {
   data() {
@@ -32,7 +32,7 @@ export default {
     }
   },
   created() {
-    db.collection('tasks').onSnapshot(res => {
+    firebase.firestore().collection('tasks').onSnapshot(res => {
       const changes = res.docChanges();
       changes.forEach(change => {
         if(change.type === 'added') {

@@ -14,8 +14,8 @@
 
           <v-menu v-model="menu" :close-on-content-pick="false">
             <v-text-field label="Due Date" :value="formattedDate" :rules="inputRules" slot="activator" prepend-icon="date_range">
-          </v-text-field>
-          <v-date-picker v-model="dueDate"></v-date-picker>
+            </v-text-field>
+            <v-date-picker v-model="dueDate"></v-date-picker>
           </v-menu>
 
           <v-spacer></v-spacer>
@@ -29,7 +29,7 @@
 
 <script>
 import format from 'date-fns/format';
-import db from '@/fb';
+import firebase from '@/fb';
 
 export default {
   data() {
@@ -57,7 +57,7 @@ export default {
           member: 'Tom',
           status: 'Progress'
         };
-        db.collection('tasks').add(task).then(() => {
+        firebase.firestore().collection('tasks').add(task).then(() => {
           this.loading = false;
           this.dialog = false;
           this.$emit('taskAdded');
