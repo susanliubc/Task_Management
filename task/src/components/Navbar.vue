@@ -12,23 +12,29 @@
                 <span class="font-weight-light">Management</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-menu offset-y>
-                <v-btn flat slot="activator" color="grey">
-                    <v-icon left>expand_more</v-icon>
-                    <span>Menu</span>
-                </v-btn>
-                <v-list>
-                    <v-list-tile v-for="link in links" :key="link.text" router :to="link.route">
-                        <v-list-tile-title>{{link.text}}</v-list-tile-title>
-                    </v-list-tile>
-                </v-list>
-            </v-menu>
-            <Login />
-            <Signup />
-            <v-btn flat color="blue" @submit.prevent="signOut">
+            <div v-if="isAuthenticated" class="hidden-sm-and-down">
+               <v-menu offset-y>
+                    <v-btn flat slot="activator" color="grey">
+                        <v-icon left>expand_more</v-icon>
+                        <span>Menu</span>
+                    </v-btn>
+                    <v-list>
+                        <v-list-tile v-for="link in links" :key="link.text" router :to="link.route">
+                            <v-list-tile-title>{{link.text}}</v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
+            </div>
+            <div v-else>
+                <Login />
+                <Signup />
+            </div>
+            <div v-if="isAuthenticated">
+                <v-btn flat color="blue" @submit.prevent="signOut">
                 <span>Sign Out</span>
                 <v-icon right>exit_to_app</v-icon>
-            </v-btn>
+                </v-btn>
+            </div>
         </v-toolbar>
         <v-navigation-drawer app v-model="drawer" class="primary">
             <v-layout column align-center>
@@ -79,6 +85,11 @@ export default {
                 {icon:'person', text:'Team', route:'/team'}
             ],
             snackbar: false
+        }
+    },
+    computed: {
+        isAuthenticated() {
+            firebase.auth.onAuthStateChanged(uer =>  user ? true : false)
         }
     },
     methods: {
