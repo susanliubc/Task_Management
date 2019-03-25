@@ -68,7 +68,6 @@
 import Popup from './Popup.vue';
 import Signup from './Signup.vue';
 import Login from './Login.vue';
-import firebase from '@/fb';
 
 export default {
     components: { 
@@ -89,12 +88,12 @@ export default {
     },
     computed: {
         isAuthenticated() {
-            firebase.auth.onAuthStateChanged(uer =>  user ? true : false)
+            return this.$store.getters.isAuthenticated;
         }
     },
     methods: {
         signOut() {
-            firebase.auth.signOut();
+            this.$store.dispatch(userSignOut);
         }
     }
 }
