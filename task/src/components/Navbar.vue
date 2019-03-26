@@ -36,7 +36,7 @@
                 </v-btn>
             </div>
         </v-toolbar>
-        <v-navigation-drawer app v-model="drawer" class="primary">
+        <v-navigation-drawer app v-model="drawer" :value="isAuthenticated" class="primary">
             <v-layout column align-center>
                 <v-flex class="mt-5">
                     <v-avatar size="100">
@@ -45,7 +45,7 @@
                     <p class="white--text text-xs-center subheading mt-1">Tom</p>
                 </v-flex>
                 <v-flex class="mt-2 mb-2">
-                    <Popup @taskAdded="snackbar=true" />
+                    <Addtask @taskAdded="snackbar=true" />
                 </v-flex>
             </v-layout>
             <v-list>
@@ -65,13 +65,13 @@
 </template>
 
 <script>
-import Popup from './Popup.vue';
+import Addtask from './Addtask.vue';
 import Signup from './Signup.vue';
 import Login from './Login.vue';
 
 export default {
     components: { 
-        Popup,
+        Addtask,
         Signup,
         Login 
     },
@@ -93,7 +93,7 @@ export default {
     },
     methods: {
         signOut() {
-            this.$store.dispatch(userSignOut);
+            this.$store.dispatch('userSignOut');
         }
     }
 }

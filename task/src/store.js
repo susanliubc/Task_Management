@@ -1,15 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import firebase from '@/firebase';
-import router from '@/router';
+import firebase from 'firebase';
 
 Vue.use(Vuex);
 
-export default new Vuex.store({
+export default new Vuex.Store({
     state: {
         tasks: [],
         teams: [],
-        user: null,
+        user: {},
         isAuthenticated: false
     },
     mutations: {
@@ -28,34 +27,31 @@ export default new Vuex.store({
     },
     actions: {
         userSignup({ commit }, { email, password }) {
-            firebase.auth
+            firebase.auth()
                 .createUserWithEmailAndPassword(email, password)
                 .then(user => {
                     commit('setUser', user);
                     commit('setIsAuthenticated', true);
-                    signupForm.reset();
                 })
-                .catch(err => console.log('Error: ', err.message))
+                .catch(err => err.message)
         },
         userLogin({ commit }, { email, password }) {
-            firebase.auth
+            firebase.auth()
                 .signInWithEmailAndPassword(email, password)
                 .then(user => {
                     commit('setUser', user);
                     commit('setIsAuthenticated', true);
-                    loginForm.reset()
                 })
-                .catch(err => console.log('Error: ', err.message))
+                .catch(err => err.message)
         },
         userSignout({ commit }) {
-            firebase.auth
+            firebase.auth()
                 .signOut()
                 .then(() => {
                     commit('setUser', null);
                     commit('setIsAuthenticated', false);
-                    loginForm.reset()
                 })
-                .catch(err => console.log('Error: ', err.message))
+                .catch(err => err.message)
         },
         addTasks({ state }, payload) {
             firebase.firestore.ref('users').child(state.user.user.uid).push(payload.tasks.label);
