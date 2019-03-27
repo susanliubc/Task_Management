@@ -10,8 +10,8 @@
             </v-card-title>
             <v-card-text>
                 <v-form class="px-3 grey--text text-darken-3" ref="form" @submit.prevent="submitLoginForm">
-                    <v-text-field label="Email" type="email" :rules="emailRule" required :value="email" prepend-icon="email"></v-text-field>
-                    <v-text-field label="Password" type="password" :rules="passwordRule" required :value="password" prepend-icon="lock"></v-text-field>
+                    <v-text-field label="Email" type="email" :rules="emailRule" required v-model="email" prepend-icon="email"></v-text-field>
+                    <v-text-field label="Password" type="password" :rules="passwordRule" required v-model="password" prepend-icon="lock"></v-text-field>
                     <v-btn class="success mx-0 mt-3" type="submit" :loading="loading">Login</v-btn>
                 </v-form>
             </v-card-text>
@@ -35,7 +35,7 @@ export default {
             ],
             passwordRule: [
                 v => !!v || 'Password is required',
-                v => v.length >=6  || 'Password must have at least 6 characters'
+                v => v && v.length >=6  || 'Password must have at least 6 characters'
             ]
         }
     },
@@ -51,6 +51,7 @@ export default {
                     password: this.password
                 });
                 loginForm.reset();
+                this.loading = false;
             }
         }
     }

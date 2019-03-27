@@ -8,7 +8,7 @@ export default new Vuex.Store({
     state: {
         tasks: [],
         teams: [],
-        user: {},
+        user: null,
         isAuthenticated: false
     },
     mutations: {
@@ -26,13 +26,20 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        userSignup({ commit }, { email, password }) {
+        userSignup({ commit }, { email, password, firstName, lastName }) {
             firebase.auth()
                 .createUserWithEmailAndPassword(email, password)
                 .then(user => {
                     commit('setUser', user);
-                    commit('setIsAuthenticated', true);
+                    commit('setIsAuthenticated', false);
                 })
+                .then(resp => 
+                    firebase.firestore.collection('users').doc(resp.user.uid).set({
+                        firstName: resp.user.firstName,
+                        lastName: resp.user.lastName,
+                        fullName: resp.user.firstName + resp.user.lastName
+                    })
+                )
                 .catch(err => err.message)
         },
         userLogin({ commit }, { email, password }) {
@@ -40,8 +47,7 @@ export default new Vuex.Store({
                 .signInWithEmailAndPassword(email, password)
                 .then(user => {
                     commit('setUser', user);
-                    commit('setIsAuthenticated', true);
-                })
+                    commit('setIsAuthenticated', true);})
                 .catch(err => err.message)
         },
         userSignout({ commit }) {
