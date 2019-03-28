@@ -56,10 +56,13 @@ export default {
                 //sign up the user
                 this.$store.dispatch('userSignup', {
                     email: this.email, 
-                    password: this.password
+                    password: this.password,
+                    firstName: this.firstName,
+                    lastName: this.lastName
                 });
                 signupForm.reset();  
-                this.loading = false;      
+                this.loading = false; 
+                this.dialog = false;    
             }
         }
     },

@@ -93,7 +93,7 @@ export default {
     },
     methods: {
         signOut() {
-            this.$store.dispatch('userSignOut');
+            this.$store.dispatch('userSignout');
         }
     }
 }

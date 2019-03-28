@@ -52,6 +52,7 @@ export default {
                 });
                 loginForm.reset();
                 this.loading = false;
+                this.dialog = false;
             }
         }
     }

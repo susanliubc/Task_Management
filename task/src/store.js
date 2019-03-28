@@ -26,21 +26,17 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        userSignup({ commit }, { email, password, firstName, lastName }) {
+        userSignup({}, { email, password, firstName, lastName }) {
             firebase.auth()
                 .createUserWithEmailAndPassword(email, password)
-                .then(user => {
-                    commit('setUser', user);
-                    commit('setIsAuthenticated', false);
+                .then(cred => {
+                    firebase.firestore().collection('users').doc(cred.user.uid).set({
+                       firstName: firstName,
+                       lastName: lastName,
+                       fullName: firstName[0] + lastName[0]
+                    });
                 })
-                .then(resp => 
-                    firebase.firestore.collection('users').doc(resp.user.uid).set({
-                        firstName: resp.user.firstName,
-                        lastName: resp.user.lastName,
-                        fullName: resp.user.firstName + resp.user.lastName
-                    })
-                )
-                .catch(err => err.message)
+                .catch(err => console.log('Signup Error: ',err.message))
         },
         userLogin({ commit }, { email, password }) {
             firebase.auth()
@@ -48,7 +44,7 @@ export default new Vuex.Store({
                 .then(user => {
                     commit('setUser', user);
                     commit('setIsAuthenticated', true);})
-                .catch(err => err.message)
+                .catch(err => console.log('Login Error: ', err.message))
         },
         userSignout({ commit }) {
             firebase.auth()
@@ -57,18 +53,18 @@ export default new Vuex.Store({
                     commit('setUser', null);
                     commit('setIsAuthenticated', false);
                 })
-                .catch(err => err.message)
+                .catch(err => console.log('Logout Error: ', err.message))
         },
         addTasks({ state }, payload) {
-            firebase.firestore.ref('users').child(state.user.user.uid).push(payload.tasks.label);
+            firebase.firestore().ref('users').child(state.user.user.uid).push(payload.tasks.label);
+            firebase.firestore().collection('tasks').add(task)
         },
         addTeams({ state }, payload) {
-            firebase.firestore.ref('users').child(state.user.user.uid).push(payload.teams.label);
+            firebase.firestore().ref('users').child(state.user.user.uid).push(payload.teams.label);
+            firebase.firestore().collection('tasks').add(task);
         }
     },
     getters: {
-        isAuthenticated(state) {
-            return state.user !== null && state.user !== undefined;
-        }
+        isAuthenticated:  state => state.isAuthenticated  
     }
 });
