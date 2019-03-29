@@ -8,7 +8,7 @@
     <v-container class="my-5">
       
       <v-expansion-panel>
-        <v-expansion-panel-content v-for="task in myTasks" :key="task.title">
+        <v-expansion-panel-content v-for="(task,index) in userTasks" :key="index">
           <div slot="header" class="py-1">{{task.title}}</div>
           <v-card>
             <v-card-text class="px-4 grey--text">
@@ -40,9 +40,21 @@ export default {
       snackbar: false
     }
   },
+  //Fix here
+  methods: {
+    deleteTask(id) {
+      return this.$store.state.tasks.filter(task => task.id !== id)
+    },
+    getTasks() {
+      this.$store.dispatch('getUserTasks');
+    }
+  },
   computed: {
-    myTasks() {
-      return this.tasks.filter(task => task.member === 'Tom');
+    userTasks() {
+      return this.$store.state.userTasks;
+    },
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
     }
   },
   created() {
@@ -55,8 +67,17 @@ export default {
             id: change.doc.id
           })
         }
+        if(change.type === 'modified') {
+          this.tasks.doc(change.doc.id).set(change.doc.data());
+        }
+        if(change.type === 'removed') {
+          this.tasks.doc(change.doc.id).delete();
+        }
       })
     })
+  },
+  mounted() {
+    this.getTasks();
   }
 }
 </script>

@@ -30,16 +30,15 @@
 </template>
 
 <script>
-import format from 'date-fns/format';
 import firebase from '@/fb';
 
 export default {
   data() {
     return {
-      team: '',
+      teamName: '',
       members: '',
       search: '',
-      roles: [Designer, Web_Developer, QA, Leader],
+      roles: ['Designer', 'Web_Developer', 'QA', 'Leader'],
       inputRules: [
         v => !!v || 'This field is required',
         v => v && v.length >= 3 || 'Minimum length is 3 characters'
@@ -49,6 +48,9 @@ export default {
     }
   },
   methods: {
+    addMember() {
+
+    },
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;

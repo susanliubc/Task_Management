@@ -7,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         tasks: [],
+        userTasks: [],
         teams: [],
         user: null,
         isAuthenticated: false
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     mutations: {
         setTasks(state, payload) {
             state.tasks = payload;
+        },
+        setUserTasks(state, payload) {
+            state.userTasks = payload;
         },
         setTeams(state, payload) {
             state.teams = payload;
@@ -33,7 +37,7 @@ export default new Vuex.Store({
                     firebase.firestore().collection('users').doc(cred.user.uid).set({
                        firstName: firstName,
                        lastName: lastName,
-                       fullName: firstName[0] + lastName[0]
+                       initials: firstName[0] + lastName[0]
                     });
                 })
                 .catch(err => console.log('Signup Error: ',err.message))
@@ -55,13 +59,31 @@ export default new Vuex.Store({
                 })
                 .catch(err => console.log('Logout Error: ', err.message))
         },
-        addTasks({ state }, payload) {
-            firebase.firestore().ref('users').child(state.user.user.uid).push(payload.tasks.label);
-            firebase.firestore().collection('tasks').add(task)
+        addTasks({ state }, task) {
+            console.log('Task: ', task);
+            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').add(task);
         },
-        addTeams({ state }, payload) {
-            firebase.firestore().ref('users').child(state.user.user.uid).push(payload.teams.label);
-            firebase.firestore().collection('tasks').add(task);
+        addTeams({ state }, team) {
+            firebase.firestore().ref('users').child(state.user.user.uid).push(team);
+        },
+        editTasks({ commit }, task) {
+            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').set(task)
+                .then(tasks => {
+                commit('setTasks', tasks);
+                })
+                .catch(err => console.log('Edittask Error: ', err.message))
+        },
+        editTeams({ commit }, payload) {
+            firebase.firestore().collection('teams').set(payload)
+                .then(team => {
+                    commit('setTeams', team);
+                })
+                .catch(err => console.log('Editteam Error: ', err.message))
+        },
+        getUserTasks({ state, commit }) {
+            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').once('value', snapshot => {
+                    commit('setUserTasks', snapshot.val())
+            })
         }
     },
     getters: {

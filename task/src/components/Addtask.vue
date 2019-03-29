@@ -11,7 +11,7 @@
           </v-text-field>
           <v-textarea label="Content" v-model="content" :rules="inputRules" prepend-icon="edit">
           </v-textarea>
-          <v-select label="Status" :items="status" prepend-icon="check">
+          <v-select label="Status" :items="items" v-model="status" prepend-icon="check">
           </v-select>
 
           <v-menu v-model="menu" :close-on-content-pick="false">
@@ -39,7 +39,7 @@ export default {
       title: '',
       content: '',
       dueDate: null,
-      items: [Todo, Ongoing, Done],
+      items: ['Todo', 'Ongoing', 'Done'],
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',

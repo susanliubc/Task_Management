@@ -40,7 +40,7 @@ export default {
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',
-        v =>  v.length >= 3 || 'Minimum length is 3 characters'
+        v => v && v.length >= 3 || 'Minimum length is 3 characters'
       ],
       loading: false,
       dialog: false

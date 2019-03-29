@@ -18,12 +18,18 @@ export default new Router({
     {
       path: '/tasks',
       name: 'Tasks',
-      component: Tasks
+      component: Tasks,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/team',
       name: 'Team',
-      component: Team
+      component: Team,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 })
