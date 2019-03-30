@@ -4,10 +4,12 @@ import firebase from 'firebase';
 
 Vue.use(Vuex);
 
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 export default new Vuex.Store({
     state: {
         tasks: [],
-        userTasks: [],
         teams: [],
         user: null,
         isAuthenticated: false
@@ -15,9 +17,6 @@ export default new Vuex.Store({
     mutations: {
         setTasks(state, payload) {
             state.tasks = payload;
-        },
-        setUserTasks(state, payload) {
-            state.userTasks = payload;
         },
         setTeams(state, payload) {
             state.teams = payload;
@@ -31,10 +30,10 @@ export default new Vuex.Store({
     },
     actions: {
         userSignup({}, { email, password, firstName, lastName }) {
-            firebase.auth()
+            auth
                 .createUserWithEmailAndPassword(email, password)
                 .then(cred => {
-                    firebase.firestore().collection('users').doc(cred.user.uid).set({
+                    db.collection('users').doc(cred.user.uid).set({
                        firstName: firstName,
                        lastName: lastName,
                        initials: firstName[0] + lastName[0]
@@ -43,7 +42,7 @@ export default new Vuex.Store({
                 .catch(err => console.log('Signup Error: ',err.message))
         },
         userLogin({ commit }, { email, password }) {
-            firebase.auth()
+            auth
                 .signInWithEmailAndPassword(email, password)
                 .then(user => {
                     commit('setUser', user);
@@ -51,7 +50,7 @@ export default new Vuex.Store({
                 .catch(err => console.log('Login Error: ', err.message))
         },
         userSignout({ commit }) {
-            firebase.auth()
+            auth
                 .signOut()
                 .then(() => {
                     commit('setUser', null);
@@ -61,28 +60,46 @@ export default new Vuex.Store({
         },
         addTasks({ state }, task) {
             console.log('Task: ', task);
-            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').add(task);
+            db.collection('users').doc(state.user.user.uid).collection('tasks').add(task)
         },
         addTeams({ state }, team) {
-            firebase.firestore().ref('users').child(state.user.user.uid).push(team);
+            db.ref('users').child(state.user.user.uid).push(team)
         },
-        editTasks({ commit }, task) {
-            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').set(task)
-                .then(tasks => {
-                commit('setTasks', tasks);
-                })
-                .catch(err => console.log('Edittask Error: ', err.message))
+        editTasks({ state }, task) {
+            db.collection('users').doc(state.user.user.uid).collection('tasks').set(task)
         },
         editTeams({ commit }, payload) {
-            firebase.firestore().collection('teams').set(payload)
+            db.collection('teams').set(payload)
                 .then(team => {
                     commit('setTeams', team);
                 })
                 .catch(err => console.log('Editteam Error: ', err.message))
         },
-        getUserTasks({ state, commit }) {
-            firebase.firestore().collection('users').doc(state.user.user.uid).collection('tasks').once('value', snapshot => {
-                    commit('setUserTasks', snapshot.val())
+        getTasks({ state, commit }) {
+            db.collection('users').doc(state.user.user.uid).collection('tasks').onSnapshot(res => {
+                const changes = res.docChanges();   
+
+                changes.forEach(change => {
+                    let docId= change.doc.id;
+                    let tasks = [];
+
+                    if(change.type === 'added') {
+                        tasks.push({
+                            ...change.doc.data(),
+                            id: docId
+                        })
+                    }
+                    if(change.type === 'modified') {
+                        tasks.map(task => task.docId = change.doc.data());
+                    }
+                    if(change.type === 'removed') {
+                        tasks.filter(task => task.id !== change.doc.id);
+                    }  
+                            
+                    return tasks;
+                }).then(task => {
+                    commit('setTasks', task)
+                }).catch(err => console.log('Gettask Error: ', err.message))   
             })
         }
     },

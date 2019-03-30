@@ -3,17 +3,18 @@ import Router from 'vue-router';
 import Dashboard from './views/Dashboard.vue';
 import Tasks from './views/Tasks.vue';
 import Team from './views/Team.vue';
+import store from './store';
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
     },
     {
       path: '/tasks',
@@ -32,4 +33,20 @@ export default new Router({
       }
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if(!store.state.isAuthenticated) {
+      next({
+        path: '/'
+      });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;

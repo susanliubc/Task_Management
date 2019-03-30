@@ -8,7 +8,7 @@
     <v-container class="my-5">
       
       <v-expansion-panel>
-        <v-expansion-panel-content v-for="(task,index) in userTasks" :key="index">
+        <v-expansion-panel-content v-for="(task,index) in Tasks" :key="index">
           <div slot="header" class="py-1">{{task.title}}</div>
           <v-card>
             <v-card-text class="px-4 grey--text">
@@ -18,7 +18,10 @@
           </v-card>
           <div class="ml-3 mb-2">
             <Edittask @taskEdited="snackbar=true"/>
-            <v-btn class="yellow accent-1 red--text" @click="deleteTask">Delete Task</v-btn>
+            <v-btn class="red lighten-2 white--text" @click="deleteTask">
+              <span>Delete</span>
+              <v-icon>delete_forever</v-icon>
+            </v-btn>
           </div> 
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -46,38 +49,19 @@ export default {
       return this.$store.state.tasks.filter(task => task.id !== id)
     },
     getTasks() {
-      this.$store.dispatch('getUserTasks');
+      this.$store.dispatch('getTasks');
     }
   },
   computed: {
-    userTasks() {
-      return this.$store.state.userTasks;
+    Tasks() {
+      return this.$store.state.tasks;
     },
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     }
   },
   created() {
-    firebase.firestore().collection('tasks').onSnapshot(res => {
-      const changes = res.docChanges();
-      changes.forEach(change => {
-        if(change.type === 'added') {
-          this.tasks.push({
-            ...change.doc.data(),
-            id: change.doc.id
-          })
-        }
-        if(change.type === 'modified') {
-          this.tasks.doc(change.doc.id).set(change.doc.data());
-        }
-        if(change.type === 'removed') {
-          this.tasks.doc(change.doc.id).delete();
-        }
-      })
-    })
-  },
-  mounted() {
     this.getTasks();
-  }
+  },
 }
 </script>

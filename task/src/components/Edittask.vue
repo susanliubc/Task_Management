@@ -1,6 +1,6 @@
 <template>
   <v-dialog max-width="600px" v-model="dialog">
-    <v-btn flat slot="activator" class="success">Edit Task</v-btn>
+    <v-btn flat slot="activator" class="success">Edit</v-btn>
     <v-card>
       <v-card-title>
         <h2>Edit a Task</h2>
@@ -11,6 +11,8 @@
           </v-text-field>
           <v-textarea label="Content" v-model="content" :rules="inputRules" prepend-icon="edit">
           </v-textarea>
+          <v-select label="Status" :items="items" v-model="status" prepend-icon="check">
+          </v-select>
 
           <v-menu v-model="menu" :close-on-content-pick="false">
             <v-text-field label="Due Date" :value="formattedDate" :rules="inputRules" slot="activator" prepend-icon="date_range">
@@ -37,6 +39,8 @@ export default {
       title: '',
       content: '',
       dueDate: null,
+      status: '',
+      items: ['Todo', 'Ongoing', 'Done'],
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',
@@ -54,14 +58,16 @@ export default {
           title: this.title, 
           content: this.content,
           dueDate: this.dueDate,
-          member: 'Tom',
-          status: 'Progress'
+          status: this.status
         };
-        firebase.firestore().collection('tasks').update(task).then(() => {
-          this.loading = false;
-          this.dialog = false;
-          this.$emit('taskEdited');
-        });
+
+        //user edit task
+        this.$store.dispatch('editTasks', { task });
+        taskForm.reset();
+
+        this.loading = false;
+        this.dialog = false;
+        this.$emit('taskEdited'); 
       }
     }
   },
