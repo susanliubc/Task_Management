@@ -1,7 +1,7 @@
 # Task_Management-Hello Vue!
 A task management app using Vue family(Vue, Vuex, Vuetify) 
 
-Front end: Vue CLI, V Router, Vuetify(Material degign in Vue)
+Front end: Vue CLI, Vue Router, Vuetify(Material degign in Vue)
 
 State management: Vuex
 
