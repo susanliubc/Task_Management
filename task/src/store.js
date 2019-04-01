@@ -71,22 +71,22 @@ export default new Vuex.Store({
         },
         addMembers({ state }, member) {
             console.log('Member: ', member);
-            db.collection('members').doc(state.teams.team.id).collection('members').add(member);
+            db.collection('members').doc(state.teams.id).collection('members').add(member);
         },
         editTasks({ state }, task) {
-            db.collection('users').doc(state.user.user.uid).collection('tasks').doc(state.tasks.task.id).set(task);
+            db.collection('users').doc(state.user.user.uid).collection('tasks').doc(state.tasks.id).set(task);
         },
         editTeams({}, team) {
-            db.collection('teams').doc(state.teams.team.id).set(team);
+            db.collection('teams').doc(state.teams.id).set(team);
         },
         editMembers({ state }, member) {
-            db.collection('teams').doc(state.teams.team.id).collection('members').doc(state.members.member.id).set(member);
+            db.collection('teams').doc(state.teams.id).collection('members').doc(state.members.id).set(member);
         },
         deleteTasks({ state } ) {
-            db.collection('tasks').doc(state.tasks.task.id).delete()
+            db.collection('tasks').doc(state.tasks.id).delete()
         },
         deleteMembers({ state } ) {
-            db.collection('teams').doc(state.teams.team.id).collection('members').doc(state.members.member.id).delete()
+            db.collection('teams').doc(state.teams.id).collection('members').doc(state.members.id).delete()
         },
         getTasks({ state, commit }) {
             db.collection('users').doc(state.user.user.uid).collection('tasks').get()
@@ -95,22 +95,20 @@ export default new Vuex.Store({
 
                     return changes.map(change => {
                         let docId= change.doc.id;
-                        let tasks = [];
+                        let tasks = {};
 
                         if(change.type === 'added') {
-                            tasks.push({
+                            return tasks = {
                                 ...change.doc.data(),
                                 id: docId
-                            });
-                            
+                            };
                         }
                         if(change.type === 'modified') {
-                            tasks.map(task => task.docId = change.doc.data());
+                            return tasks.map(task => task.id = change.doc.id);
                         }
                         if(change.type === 'removed') {
-                            tasks.filter(task => task.id !== change.doc.id);
+                            return tasks.filter(task => task.id !== change.doc.id);
                         }   
-                        return tasks;  
                     })
                 })
                 .then(task => {
@@ -125,22 +123,20 @@ export default new Vuex.Store({
 
                     return changes.map(change => {
                         let docId= change.doc.id;
-                        let teams = [];
+                        let teams = {};
 
                         if(change.type === 'added') {
-                            teams.push({
+                            return teams = {
                                 ...change.doc.data(),
                                 id: docId
-                            });
-                            
+                            };
                         }
                         if(change.type === 'modified') {
-                            teams.map(team => team.docId = change.doc.data());
+                            return teams.map(team => team.id = change.doc.data());
                         }
                         if(change.type === 'removed') {
-                            teams.filter(team => team.id !== change.doc.id);
-                        }   
-                        return teams;  
+                            return teams.filter(team => team.id !== change.doc.id);
+                        }    
                     })
                 })
                 .then(team => {
@@ -155,22 +151,20 @@ export default new Vuex.Store({
 
                     return changes.map(change => {
                         let docId= change.doc.id;
-                        let members = [];
+                        let members = {};
 
                         if(change.type === 'added') {
-                            tasks.push({
+                            return members = {
                                 ...change.doc.data(),
                                 id: docId
-                            });
-                            
+                            };
                         }
                         if(change.type === 'modified') {
-                            members.map(member => member.docId = change.doc.data());
+                            return members.map(member => member.id = change.doc.data());
                         }
                         if(change.type === 'removed') {
-                            members.filter(member => member.id !== change.doc.id);
+                            return members.filter(member => member.id !== change.doc.id);
                         }   
-                        return members;  
                     })
                 })
                 .then(member => {

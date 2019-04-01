@@ -7,13 +7,13 @@
     <h1 class="subheading grey--text text-darken-4">Tasks</h1>
     <v-container class="my-5">
       <v-expansion-panel>
-        <h2>Start</h2>
-        <v-expansion-panel-content v-for="(task,idx) in tasks.task" :key="idx">
-          <div slot="header" class="py-1">{{ task.title }}</div>
+        <v-expansion-panel-content v-for="(item,idx) in tasks" :key="idx" >
+          <div slot="header" class="py-1">{{ item.task.title }}</div>
           <v-card>
-            <v-card-text class="px-4 grey--text">
-              <div class="font-weight-bold">Due by {{ task.dueDate }}</div>
-              <div>{{ task.content }}</div>
+            <v-card-text class="ml-2 my-1 grey--text">
+              <div class="font-weight-bold">Due by {{ item.task.dueDate }}</div>
+              <div>{{ item.task.status }}</div>
+              <div>{{ item.task.content }}</div>
             </v-card-text>
           </v-card>
           <div class="ml-3 mb-2">
@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      snackbar: false
+      snackbar: false,
     }
   },
   methods: {
@@ -54,7 +54,7 @@ export default {
     ...mapState(['tasks']),
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
-    }
+    },
   },
   created() {
     this.getTasks();
