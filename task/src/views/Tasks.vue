@@ -1,7 +1,7 @@
 <template>
   <div class="tasks my-3">
     <v-snackbar v-model="snackbar" :timeout="4000" top color="success">
-      <span>You have editd a new task</span>
+      <span>You have edited a task</span>
       <v-btn flat color="white" @click="snackbar = false">Close</v-btn>
     </v-snackbar>
     <h1 class="subheading grey--text text-darken-4">Tasks</h1>
@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      snackbar: false,
+      snackbar: false
     }
   },
   methods: {
@@ -54,7 +54,7 @@ export default {
     ...mapState(['tasks']),
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
-    },
+    }
   },
   created() {
     this.getTasks();

@@ -11,7 +11,6 @@ export default new Vuex.Store({
     state: {
         tasks: [],
         teams: [],
-        members: [],
         user: null,
         isAuthenticated: false
     },
@@ -23,7 +22,7 @@ export default new Vuex.Store({
             state.teams = payload;
         },
         setMembers(state, payload) {
-            state.teams = payload;
+            state.teams.members = payload;
         },
         setUser(state, payload) {
             state.user = payload;
@@ -63,7 +62,6 @@ export default new Vuex.Store({
                 .catch(err => console.log('Logout Error: ', err.message));
         },
         addTasks({ state }, task) {
-            console.log('Task: ', task);
             db.collection('users').doc(state.user.user.uid).collection('tasks').add(task);
         },
         addTeams({}, team) {
@@ -145,7 +143,7 @@ export default new Vuex.Store({
                 }).catch(err => console.log('Getteam Error: ', err.message))   
         },
         getMembers({ state, commit }) {
-            db.collection('teams').doc(state.teams.team.id).collection('members').get()
+            db.collection('teams').doc(state.teams.id).collection('members').get()
                 .then(res => {
                     const changes = res.docChanges();   
 

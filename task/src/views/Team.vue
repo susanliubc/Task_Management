@@ -1,25 +1,32 @@
 <template>
-  <div class="team my-3">
+  <h3 class="team my-3">
+    <v-snackbar v-model="snackbar" :timeout="4000" top color="success">
+      <span>You have editded a team</span>
+      <v-btn flat color="white" @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
     <h1 class="subheading grey--text text-darken-4">Team</h1>
     <v-container class="my-5">
       <v-layout>
-        <div>
-          <Addteam />
-        </div>
-        <v-flex row xs12 sm6 md4 lg3 v-for="person in myTeams" :key="person.name">
-          <v-card flat class="text-xs-center ma-3">
-            <v-card-title>
-              <v-select label="teams" :items="teams" prepend-icon="group">
-              </v-select>
-              <v-btn flat class="success" @click="selectTeam">
-                <span>Select Team</span>
-              </v-btn>
-              <div class="h3">{{team.teamName}}</div>
+        <v-flex row xs12 sm6 md4 lg3>
+          <v-card flat class="text-xs-center ma-3" v-for="(item,index) in teams" :key="index">
+            <v-card-title >
+              <h3 class="subheading grey--text text-darken-4">Current Team</h3>
+              <h4>{{ item.teamName }}</h4>
+              <h4>{{ item.description }}</h4> 
             </v-card-title>
+            
+            <div class="ml-3 mb-2">
+              <Addteam />
+              <Editeam @teamEdited="snackbar=true" />
+              <v-btn class="red lighten-2 white--text" @click="deleteTeams">
+                <span>Delete</span>
+                <v-icon right>delete_forever</v-icon>
+              </v-btn>
+          </div>
 
             <v-card-text>
-              <div class="subheading">{{person.name}}</div>
-              <div class="grey--text">{{person.role}}</div>
+              <div class="subheading">{{ item.member.memberName }}</div>
+              <div class="blue--text">{{ item.member.role }}</div>
             </v-card-text>
 
             <v-card-actions>
@@ -29,40 +36,48 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+          <div class="ml-3 mb-2">
+            <v-btn class="red lighten-2 white--text" @click="deleteMembers">
+              <span>Delete</span>
+              <v-icon right>delete_forever</v-icon>
+            </v-btn>
+          </div> 
         </v-flex>
       </v-layout>
     </v-container>
-  </div>
+  </h3>
 </template>
 
 <script>
 import Addteam from '../components/Addteam.vue';
+//import Editteam from '../components/Editteam.vue';
+import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
-  components: { Addteam },
+  components: { 
+    Addteam,
+    //Editteam,
+  },
   data() {
     return {
-      team: [
-        {name: 'Tom', role: 'UI Developer', avatar: '/avatar_1.png'},
-        {name: 'Cathy', role: 'Web Developer', avatar: '/avatar_2.png'},
-        {name: 'Mickey', role: 'Web Developer', avatar: '/avatar_3.png'},
-        {name: 'Jack', role: 'Designer', avatar: '/avatar_4.png'},
-        {name: 'Becky', role: 'Team Leader', avatar: '/avatar_5.png'},
-      ],
+      snackbar: false
     }
   },
   methods: {
-    seleactTeam() {
-      //ADD CONTENT HERE
-    }
+    ...mapActions(['deleteTeams', 'deleteMembers', 'getTeams','getMembers'])
   },
   computed: {
-    myTeams() {
-      this.$store.state.teams;
-    },
+    ...mapState(['teams']),
+    ...mapGetters(['isAuthenticated']),
     isAdmin() {
       return true;
     }
-  }
+  },
+  created() {
+    this.getTeams();
+    this.getMembers();
+  },
 }
 </script>

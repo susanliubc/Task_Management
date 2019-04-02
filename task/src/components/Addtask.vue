@@ -7,15 +7,32 @@
       </v-card-title>
       <v-card-text>
         <v-form class="px-3 grey--text text-darken-3" ref="form">
-          <v-text-field label="Title" v-model="title" :rules="inputRules" prepend-icon="folder">
+          <v-text-field 
+            label="Title" 
+            v-model="title" 
+            :rules="inputRules" 
+            prepend-icon="folder">
           </v-text-field>
-          <v-textarea label="Content" v-model="content" :rules="inputRules" prepend-icon="edit">
+          <v-textarea 
+            label="Content" 
+            v-model="content" 
+            :rules="inputRules" 
+            prepend-icon="edit">
           </v-textarea>
-          <v-select label="Status" :items="items" v-model="status" prepend-icon="check">
+          <v-select 
+            label="Status" 
+            :items="items" 
+            v-model="status" 
+            prepend-icon="check">
           </v-select>
 
           <v-menu v-model="menu" :close-on-content-pick="false">
-            <v-text-field label="Due Date" :value="formattedDate" :rules="inputRules" slot="activator" prepend-icon="date_range">
+            <v-text-field 
+              label="Due Date" 
+              :value="formattedDate" 
+              :rules="inputRules" 
+              slot="activator" 
+              prepend-icon="date_range">
             </v-text-field>
             <v-date-picker v-model="dueDate"></v-date-picker>
           </v-menu>
@@ -31,7 +48,6 @@
 
 <script>
 import format from 'date-fns/format';
-import firebase from '@/fb';
 
 export default {
   data() {
@@ -39,6 +55,7 @@ export default {
       title: '',
       content: '',
       dueDate: null,
+      status: '',
       items: ['Todo', 'Ongoing', 'Done'],
       menu: false,
       inputRules: [
@@ -67,7 +84,6 @@ export default {
           
         this.loading = false;
         this.dialog = false;
-        this.$emit('taskAdded');
       }
     }
   },
