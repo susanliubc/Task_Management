@@ -41,6 +41,7 @@ export default {
       dueDate: null,
       status: '',
       items: ['Todo', 'Ongoing', 'Done'],
+      id: this.id,
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',
@@ -50,15 +51,20 @@ export default {
       dialog: false
     }
   },
+  props: ['id'],
   methods: {
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;
+        const taskForm = this.$refs.form;
         const task = {
-          title: this.title, 
-          content: this.content,
-          dueDate: this.dueDate,
-          status: this.status
+          id: this.id,
+          task: {
+            title: this.title, 
+            content: this.content,
+            dueDate: this.dueDate,
+            status: this.status
+          }
         };
 
         //user edit task
@@ -67,7 +73,8 @@ export default {
 
         this.loading = false;
         this.dialog = false;
-        this.$emit('taskEdited'); 
+        this.$emit('taskEdited');
+         
       }
     }
   },
