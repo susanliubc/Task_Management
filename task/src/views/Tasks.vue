@@ -7,7 +7,7 @@
     <h1 class="subheading grey--text text-darken-4">Tasks</h1>
     <v-container class="my-5">
       <v-expansion-panel>
-        <v-expansion-panel-content v-for="(item,idx) in tasks" :key="idx" >
+        <v-expansion-panel-content v-for="item in tasks" :key="item.id">
           <div slot="header" class="py-1">{{ item.task.title }}</div>
           <v-card>
             <v-card-text class="ml-2 my-1 grey--text">
@@ -17,8 +17,8 @@
             </v-card-text>
           </v-card>
           <div class="ml-3 mb-2">
-            <Edittask @taskEdited="snackbar=true"/>
-            <v-btn class="red lighten-2 white--text" @click="deleteTask">
+            <Edittask :id="item.id" @taskEdited="snackbar=true"/>
+            <v-btn class="red lighten-2 white--text" @click="deleteTask(item.id)">
               <span>Delete</span>
               <v-icon right>delete_forever</v-icon>
             </v-btn>
@@ -32,6 +32,7 @@
 <script>
 import Edittask from '../components/Edittask.vue';
 import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   components: { 
@@ -43,11 +44,10 @@ export default {
     }
   },
   methods: {
-    deleteTask() {
-      this.$store.dispatch('deleteTasks');
-    },
-    getTasks() {
-      this.$store.dispatch('getTasks');
+    ...mapActions(['getTasks']),
+    deleteTask(id) {
+      console.log('id: ', id);
+      this.$store.dispatch('deleteTasks', id);
     }
   },
   computed: {

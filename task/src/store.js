@@ -11,6 +11,8 @@ export default new Vuex.Store({
     state: {
         tasks: [],
         teams: [],
+        changeTask: {},
+        changeTeam: {},
         user: null,
         isAuthenticated: false
     },
@@ -32,7 +34,7 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        userSignup({}, { email, password, firstName, lastName }) {
+        userSignup({commit}, { email, password, firstName, lastName }) {
             auth
                 .createUserWithEmailAndPassword(email, password)
                 .then(cred => {
@@ -41,15 +43,23 @@ export default new Vuex.Store({
                        lastName: lastName,
                        initials: firstName[0] + lastName[0]
                     });
+                    console.log('cred: ', cred);
+                    commit('setUser', cred);
                 })
                 .catch(err => console.log('Signup Error: ',err.message));
         },
         userLogin({ commit }, { email, password }) {
             auth
                 .signInWithEmailAndPassword(email, password)
-                .then(user => {
-                    commit('setUser', user);
-                    commit('setIsAuthenticated', true);})
+                .then(user => {  
+                    db.collection('users').doc(user.user.uid).get()
+                        .then(doc => {
+                            const user = {...doc.data(), id:doc.id};
+                            commit('setUser', user);
+                            commit('setIsAuthenticated', true);
+                            console.log('user: ', user);
+                        }) 
+                })   
                 .catch(err => console.log('Login Error: ', err.message));
         },
         userSignout({ commit }) {
@@ -62,7 +72,7 @@ export default new Vuex.Store({
                 .catch(err => console.log('Logout Error: ', err.message));
         },
         addTasks({ state }, task) {
-            db.collection('users').doc(state.user.user.uid).collection('tasks').add(task);
+            db.collection('users').doc(state.user.id).collection('tasks').add(task);
         },
         addTeams({}, team) {
             db.collection('teams').add(team);
@@ -72,7 +82,9 @@ export default new Vuex.Store({
             db.collection('members').doc(state.teams.id).collection('members').add(member);
         },
         editTasks({ state }, task) {
-            db.collection('users').doc(state.user.user.uid).collection('tasks').doc(state.tasks.id).set(task);
+            db.collection('users').doc(state.user.id).collection('tasks').doc(task.id).set(task.task)
+                .then(() => console.log("Document successfully edited!"))
+                .catch(err => console.log('Edittask Error: ', err.message)) 
         },
         editTeams({}, team) {
             db.collection('teams').doc(state.teams.id).set(team);
@@ -80,15 +92,17 @@ export default new Vuex.Store({
         editMembers({ state }, member) {
             db.collection('teams').doc(state.teams.id).collection('members').doc(state.members.id).set(member);
         },
-        deleteTasks({ state } ) {
-            db.collection('tasks').doc(state.tasks.id).delete()
+        deleteTasks({ state }, id) {
+            console.log('store id: ', id);
+            db.collection('users').doc(state.user.id).collection('tasks').doc(id).delete()
+                .then(() => console.log("Document successfully deleted!"))
+                .catch(error => console.error("Deletetask Error: ", error))
         },
         deleteMembers({ state } ) {
             db.collection('teams').doc(state.teams.id).collection('members').doc(state.members.id).delete()
         },
         getTasks({ state, commit }) {
-            db.collection('users').doc(state.user.user.uid).collection('tasks').get()
-                .then(res => {
+            db.collection('users').doc(state.user.id).collection('tasks').get().then(res => {
                     const changes = res.docChanges();   
 
                     return changes.map(change => {
@@ -102,17 +116,21 @@ export default new Vuex.Store({
                             };
                         }
                         if(change.type === 'modified') {
-                            return tasks.map(task => task.id = change.doc.id);
+                            return tasks.map(task => 
+                                task.id === docId ? task.task = change.doc.data(): task    
+                            );
                         }
                         if(change.type === 'removed') {
-                            return tasks.filter(task => task.id !== change.doc.id);
+                            return tasks.filter(task => task.id !== docId);
                         }   
+                        console.log('tasks: ', tasks);  
                     })
                 })
                 .then(task => {
                     commit('setTasks', task);
                     console.log(task);
-                }).catch(err => console.log('Gettask Error: ', err.message))   
+                })
+                .catch(err => console.log('Gettask Error: ', err.message))
         },
         getTeams({ commit }) {
             db.collection('teams').get()
@@ -130,11 +148,14 @@ export default new Vuex.Store({
                             };
                         }
                         if(change.type === 'modified') {
-                            return teams.map(team => team.id = change.doc.data());
+                            return teams.map(team => 
+                                team.id === docId ? team.team = change.doc.data(): team    
+                            );
                         }
                         if(change.type === 'removed') {
-                            return teams.filter(team => team.id !== change.doc.id);
-                        }    
+                            return teams.filter(team => team.id !== docId);
+                        }   
+                        console.log('teams: ', teams);   
                     })
                 })
                 .then(team => {
@@ -156,13 +177,16 @@ export default new Vuex.Store({
                                 ...change.doc.data(),
                                 id: docId
                             };
-                        }
+                        } 
                         if(change.type === 'modified') {
-                            return members.map(member => member.id = change.doc.data());
+                            return members.map(member => 
+                                member.id === docId ? member.member = change.doc.data(): member    
+                            );
                         }
                         if(change.type === 'removed') {
-                            return members.filter(member => member.id !== change.doc.id);
+                            return members.filter(member => member.id !== docId);
                         }   
+                        console.log('members: ', members);  
                     })
                 })
                 .then(member => {
