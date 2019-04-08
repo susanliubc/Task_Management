@@ -15,6 +15,9 @@ const router = new Router({
       path: '/',
       name: 'dashboard',
       component: Dashboard,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/tasks',
@@ -36,14 +39,19 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+  //check for requiresAuth guard
   if(to.matched.some(record => record.meta.requiresAuth)) {
+    //check if not logged in
     if(!store.state.isAuthenticated) {
+      //go to login
       next({
-        path: '/'
+        path: '/login'
       });
+      //proceed to route
     } else {
       next();
     }
+    //proceed to route
   } else {
     next();
   }
