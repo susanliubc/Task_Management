@@ -1,32 +1,32 @@
 <template>
   <v-dialog max-width="600px" v-model="dialog">
-    <v-btn flat slot="activator" class="success">Add Team</v-btn>
+    <v-btn flat slot="activator" class="success">Add Member</v-btn>
     <v-card>
       <v-card-title>
         <h2>Add a New Member</h2>
       </v-card-title>
       <v-card-text>
-        <v-form class="px-3 grey--text text-darken-3" ref="form" @submit.prevent="addMember">
-          <v-textfield 
-            label="Search Member"  
+        <v-form class="px-3 grey--text text-darken-3" ref="form">
+          <v-text-field 
+            label="Search Member's First Name"  
             v-model="search"
             type="text" 
             :rules="inputRules" 
             required  
-            prepend-icon="mdi-database-search">
-          </v-textfield>
-          <v-btn flat class="success" @click="searchMember">
-            <span>add</span>
+            prepend-icon="search">
+          </v-text-field>
+          <v-btn flat class="success mx-0 mt-3" @click="searchMember">
+            <span>search</span>
           </v-btn>
 
-          <v-textfield 
+          <v-text-field 
             label="Member" 
             v-model="memberName" 
             type="text" 
             :rules="inputRules" 
             required 
             prepend-icon="person">
-          </v-textfield>
+          </v-text-field>
           <v-select 
             label="Role" 
             :items="roles" 
@@ -51,13 +51,11 @@ import firebase from '@/fb.js';
 export default {
   data() {
     return {
-      teamName: '',
-      description: '',
       memberName: '',
       role: '',
-      model: null,
       search: '',
       roles: ['Designer', 'Web Developer', 'QA', 'Leader'],
+      teamId: this.teamId,
       inputRules: [
         v => !!v || 'This field is required',
         v => v && v.length >= 3 || 'Minimum length is 3 characters'
@@ -83,16 +81,19 @@ export default {
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;
-        const teamForm = this.$refs.form;
+        const memberForm = this.$refs.form;
 
         const member = {
-          memberName: this.memberName,
-          role: this.role
+          teamId: this.teamId,
+          member: {
+            memberName: this.memberName,
+            role: this.role
+          }
         };
         
-        //user add team
+        //user add member
         this.$store.dispatch('addMembers', { member });
-        teamForm.reset();
+        memberForm.reset();
           
         this.loading = false;
         this.dialog = false;

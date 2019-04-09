@@ -77,9 +77,9 @@ export default new Vuex.Store({
         addTeams({}, team) {
             db.collection('teams').add(team);
         },
-        addMembers({}, { teamId, member }) {
+        addMembers({}, { member }) {
             console.log('Member: ', member);
-            db.collection('teams').doc(teamId).collection('members').add(member);
+            db.collection('members').add(member);
         },
         editTasks({ state }, task) {
             db.collection('users').doc(state.user.id).collection('tasks').doc(task.id).set(task.task)
@@ -91,8 +91,8 @@ export default new Vuex.Store({
                 .then(() => console.log("Team successfully edited!"))
                 .catch(err => console.log('Editteam Error: ', err.message))
         },
-        editMembers({}, { teamId, member }) {
-            db.collection('teams').doc(teamId).collection('members').doc(member.id).set(member.member)
+        editMembers({}, { member }) {
+            db.collection('members').doc(member.id).set(member.member)
                 .then(() => console.log("Member successfully edited!"))
                 .catch(err => console.log('Editmember Error: ', err.message));
         },
@@ -107,8 +107,8 @@ export default new Vuex.Store({
                 .then(() => console.log("Team successfully deleted!"))
                 .catch(error => console.error("Deleteteam Error: ", error))
         },
-        deleteMembers( {}, { teamId, id }) {
-            db.collection('teams').doc(teamId).collection('members').doc(id).delete()
+        deleteMembers( {}, { id }) {
+            db.collection('members').doc(id).delete()
                 .then(() => console.log("Member successfully deleted!"))
                 .catch(error => console.error("Deletemember Error: ", error))
         },

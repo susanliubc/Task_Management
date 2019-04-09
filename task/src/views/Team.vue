@@ -7,20 +7,47 @@
     <h1 class="subheading grey--text text-darken-4">Team</h1>
     <v-container class="my-5">
       <v-layout>
-        <v-flex row xs12 sm6 md4 lg3>
+        <v-flex row xs12>
           <div class="ml-3 mb-2">
-            <h2>Add a New Team</h2>
-            <v-text-field 
-              label="Team Name" 
-              v-model="teamName" 
-              type="text" 
-              :rules="inputRules" 
-              required 
-              prepend-icon="group">
-            </v-text-field>
-            <v-btn flat class="success" @click="addTeam">
-              <span>Add Team</span>
-              <v-icon>add</v-icon>
+            <h3 class="grey--text text-darken-3">Add a New Team</h3>
+            <v-form class="px-3 grey--text text-darken-3" ref="form">
+              <v-text-field 
+                label="Team Name" 
+                v-model="teamName" 
+                type="text" 
+                :rules="inputRules" 
+                required 
+                prepend-icon="group">
+              </v-text-field>
+              <v-btn flat class="success" @click="addTeam">
+                <span>Add Team</span>
+                <v-icon right>add</v-icon>
+              </v-btn>
+            </v-form>
+          </div>
+          <v-card flat class="text-xs-center ma-3" v-for="item in teams" :key="item.id">
+            <v-card-title >
+              <h3 class="subheading grey--text text-darken-4">Current Team: 
+                <span class="black--text">{{ item.team.teamName }}</span>
+              </h3>
+              <v-flex text-xs-right>
+                <Editteam teamId="item.id" />
+                <v-btn small flat icon  left color="grey" @click="deleteTeam(item.id)">
+                  <v-icon>delete</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-card-title>
+          </v-card>
+
+          <div class="ml-3 mb-2">
+            <Addmember teamId="item.id" />
+          </div>
+          
+          <div class="ml-3 mb-2">
+            <Editmember teamId="item.id" />
+            <v-btn small class="red lighten-2 white--text" @click="deleteMembers">
+              <span>Delete Member</span>
+              <v-icon right>delete</v-icon>
             </v-btn>
           </div>
           
@@ -50,12 +77,7 @@
               </v-btn>
             </v-card-actions>
           </v-card> -->
-          <div class="ml-3 mb-2">
-            <v-btn class="red lighten-2 white--text" @click="deleteMembers">
-              <span>Delete</span>
-              <v-icon right>delete_forever</v-icon>
-            </v-btn>
-          </div> 
+           
         </v-flex>
       </v-layout>
     </v-container>
@@ -63,6 +85,7 @@
 </template>
 
 <script>
+import Editteam from '../components/Editteam.vue';
 import Addmember from '../components/Addmember.vue';
 import Editmember from '../components/Editmember.vue';
 import { mapState } from 'vuex';
@@ -70,17 +93,40 @@ import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
 
 export default {
-  components: { 
+  components: {
+    Editteam, 
     Addmember,
     Editmember,
   },
   data() {
     return {
-      snackbar: false
+      teamName: '',
+      snackbar: false,
+      inputRules: [
+        v => !!v || 'This field is required',
+        v => v && v.length >= 3 || 'Minimum length is 3 characters'
+      ],
     }
   },
   methods: {
-    ...mapActions(['addTeams', 'deleteTeams', 'deleteMembers', 'getTeams','getMembers'])
+    ...mapActions(['deleteMembers', 'getTeams','getMembers']),
+    addTeam() {
+      if(this.$refs.form.validate()) {
+        const teamForm = this.$refs.form;
+        const team = {
+          teamName: this.teamName,
+        };
+        
+        //user add team
+        this.$store.dispatch('addTeams', { team });
+        teamForm.reset();
+      }
+    },
+    
+    deleteTeam(id) {
+      console.log('id: ', id);
+      this.$store.dispatch('deleteTeams', id);
+    }
   },
   computed: {
     ...mapState(['teams']),
