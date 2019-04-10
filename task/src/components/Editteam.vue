@@ -43,8 +43,8 @@ export default {
       dialog: false
     }
   },
+  props: ['teamId'],
   methods: {
-    ...mapActions(['editTeams']),
     editTeam(id) {
       if(this.$refs.form.validate()) {
         const teamForm = this.$refs.form;
@@ -54,7 +54,6 @@ export default {
             teamName: this.teamName,
           }
         };
-        console.log('teamId: ', teamId);
         
         //user edit team
         this.$store.dispatch('editTeams', { team });

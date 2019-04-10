@@ -31,25 +31,28 @@
                 <span class="black--text">{{ item.team.teamName }}</span>
               </h3>
               <v-flex text-xs-right>
-                <Editteam teamId="item.id" />
+                <Editteam v-bind:teamId="item.id" />
                 <v-btn small flat icon  left color="grey" @click="deleteTeam(item.id)">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </v-flex>
             </v-card-title>
+            <v-card-text>
+              <div class="ml-3 mb-2">
+                <Addmember :teamId="item.id" />
+              </div>
+          
+              <div class="ml-3 mb-2">
+                <Editmember :teamId="item.id" />
+                <v-btn small class="red lighten-2 white--text" @click="deleteMembers">
+                  <span>Delete Member</span>
+                  <v-icon right>delete</v-icon>
+                </v-btn>
+              </div>
+            </v-card-text>
           </v-card>
 
-          <div class="ml-3 mb-2">
-            <Addmember teamId="item.id" />
-          </div>
-          
-          <div class="ml-3 mb-2">
-            <Editmember teamId="item.id" />
-            <v-btn small class="red lighten-2 white--text" @click="deleteMembers">
-              <span>Delete Member</span>
-              <v-icon right>delete</v-icon>
-            </v-btn>
-          </div>
+
           
           <!-- <v-card flat class="text-xs-center ma-3" v-for="(item,index) in teams" :key="index">
             <v-card-title >

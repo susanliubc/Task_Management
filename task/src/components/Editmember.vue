@@ -49,6 +49,7 @@ import { mapState } from 'vuex';
 import firebase from '@/fb.js';
 
 export default {
+  props: ['teamId'],
   data() {
     return {
       memberName: '',

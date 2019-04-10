@@ -1,6 +1,8 @@
 <template>
   <v-dialog max-width="600px" v-model="dialog">
-    <v-btn flat slot="activator" class="success">Edit</v-btn>
+    <v-btn flat icon  left color="grey" slot="activator">
+      <v-icon right>edit</v-icon>
+    </v-btn>
     <v-card>
       <v-card-title>
         <h2>Edit a Task</h2>
@@ -41,7 +43,6 @@ export default {
       dueDate: null,
       status: '',
       items: ['Todo', 'Ongoing', 'Done'],
-      id: this.id,
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',

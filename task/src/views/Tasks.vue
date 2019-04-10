@@ -8,23 +8,23 @@
     <v-container class="my-5">
       <v-expansion-panel>
         <v-expansion-panel-content v-for="item in tasks" :key="item.id">
-          <div slot="header" class="py-1">
+          <v-layout row slot="header" class="py-1" align-center>
             <span>{{ item.task.title }}</span>
-            <v-flex text-xs-right shrink>
-                <Edittask :id="item.id" @taskEdited="snackbar=true"/>
-                <v-btn small flat icon  left color="grey" @click="deleteTask(item.id)">
-                  <v-icon right>delete</v-icon>
+
+            <v-flex text-xs-right>
+                <Edittask v-bind:id="item.id" @taskEdited="snackbar=true"/>
+                <v-btn flat icon  left color="grey" @click="deleteTask(item.id)">
+                  <v-icon>delete</v-icon>
                 </v-btn>
               </v-flex>
-          </div>
+          </v-layout>
           <v-card>
             <v-card-text class="ml-2 my-1 grey--text">
               <div class="font-weight-bold">Due by {{ item.task.dueDate }}</div>
               <div>{{ item.task.status }}</div>
               <div>{{ item.task.content }}</div>
             </v-card-text>
-          </v-card>
-           
+          </v-card>  
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-container>

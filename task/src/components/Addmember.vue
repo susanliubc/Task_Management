@@ -19,6 +19,20 @@
             <span>search</span>
           </v-btn>
 
+          <v-data-table
+            :items="candidates"
+            class="elevation-1"
+            hide-actions
+            hide-headers
+          >
+            <template v-slot:items="props">
+              <td>{{ props.item.firstName }}</td>
+              <td class="text-xs-right">{{ props.item.lastName }}</td>
+              <td class="text-xs-right">{{ props.item.fullName }}</td>
+              <td class="text-xs-right"><v-btn small flat icon left color="grey" @click="addMember"><v-icon>add_circle</v-icon></v-btn></td>
+            </template>
+          </v-data-table>
+
           <v-text-field 
             label="Member" 
             v-model="memberName" 
@@ -49,6 +63,7 @@ import { mapState } from 'vuex';
 import firebase from '@/fb.js';
 
 export default {
+  props: ['teamId'],
   data() {
     return {
       memberName: '',
@@ -65,18 +80,20 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['addMembers']),
     searchMember() {
-      if(this.$refs.form.validate()) {
-        search = this.search;
-        const db = firebase.firestore();
 
-        db.collections('users').where('firstName','==', search).get()
-          .then(doc => {
-            console.log(doc.data().firstName, doc.data().initials)
+        let search = this.search;
+        const db = firebase.firestore();
+        console.log('search: ', search);
+
+        db.collection('users').where('firstName','==', search).get()
+          .then(querySnapshot => {
+            return querySnapshot.forEach(doc => {
+              let candidates = doc.data();
+            });
           })
-          .catch(error => console.log('Addmember error: ', error.message))
-      }
+          .catch(error => console.log('Searchmember error: ', error.message))
+
     },
     submit() {
       if(this.$refs.form.validate()) {
