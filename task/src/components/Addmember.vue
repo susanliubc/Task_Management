@@ -21,7 +21,8 @@
 
           <v-data-table
             :items="candidates"
-            class="elevation-1"
+            v-model="selected"
+            class="elevation-1 mt-3"
             hide-actions
             hide-headers
           >
@@ -29,18 +30,17 @@
               <td>{{ props.item.firstName }}</td>
               <td class="text-xs-right">{{ props.item.lastName }}</td>
               <td class="text-xs-right">{{ props.item.fullName }}</td>
-              <td class="text-xs-right"><v-btn small flat icon left color="grey" @click="addMember"><v-icon>add_circle</v-icon></v-btn></td>
+              <td class="justify-center">
+                <v-checkbox 
+                  v-model="props.selected"
+                  :disabled ="!props.selected && selected.length != 0"
+                  :indeterminate = "!props.selected && selected.length != 0"
+                  primary
+                ></v-checkbox>
+              </td>
             </template>
           </v-data-table>
 
-          <v-text-field 
-            label="Member" 
-            v-model="memberName" 
-            type="text" 
-            :rules="inputRules" 
-            required 
-            prepend-icon="person">
-          </v-text-field>
           <v-select 
             label="Role" 
             :items="roles" 
@@ -66,11 +66,11 @@ export default {
   props: ['teamId'],
   data() {
     return {
-      memberName: '',
+      candidates: [],
       role: '',
       search: '',
+      selected: [],
       roles: ['Designer', 'Web Developer', 'QA', 'Leader'],
-      teamId: this.teamId,
       inputRules: [
         v => !!v || 'This field is required',
         v => v && v.length >= 3 || 'Minimum length is 3 characters'
@@ -81,19 +81,17 @@ export default {
   },
   methods: {
     searchMember() {
-
-        let search = this.search;
+        const search = this.search;
         const db = firebase.firestore();
-        console.log('search: ', search);
 
         db.collection('users').where('firstName','==', search).get()
           .then(querySnapshot => {
             return querySnapshot.forEach(doc => {
-              let candidates = doc.data();
+              const newCandidate = { ...doc.data() };
+              this.candidates.push(newCandidate);
             });
           })
           .catch(error => console.log('Searchmember error: ', error.message))
-
     },
     submit() {
       if(this.$refs.form.validate()) {
@@ -102,15 +100,15 @@ export default {
 
         const member = {
           teamId: this.teamId,
-          member: {
-            memberName: this.memberName,
-            role: this.role
-          }
+          memberName: this.selectRow,
+          role: this.role
         };
         
         //user add member
+        console.log('member: ', member);
         this.$store.dispatch('addMembers', { member });
         memberForm.reset();
+        this.candidates = {};
           
         this.loading = false;
         this.dialog = false;
@@ -119,10 +117,12 @@ export default {
   },
   computed: {
     ...mapState(['user']),
-    // filteredMembers() {
-    //   return teams.members.filter(member => (member.firsName + member.lastName).match(this.search) )
-    // }
+    selectRow() {
+      const selectedRow = this.selected[0];
+      return selectedRow ? `${selectedRow.fullName}` : 'No data selected';
+    }
   }
 }
 </script>
+
 

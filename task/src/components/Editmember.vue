@@ -1,6 +1,8 @@
 <template>
   <v-dialog max-width="600px" v-model="dialog">
-    <v-btn small flat slot="activator" class="success">Edit Member</v-btn>
+    <v-btn small flat icon color="grey" slot="activator">
+        <v-icon>edit</v-icon>
+    </v-btn>
     <v-card>
       <v-card-title>
         <h2>Edit a Member</h2>
@@ -19,14 +21,28 @@
             <span>search</span>
           </v-btn>
 
-          <v-text-field 
-            label="Member" 
-            v-model="memberName" 
-            type="text" 
-            :rules="inputRules" 
-            required 
-            prepend-icon="person">
-          </v-text-field>
+          <v-data-table
+            :items="candidates"
+            v-model="selected"
+            class="elevation-1 mt-3"
+            hide-actions
+            hide-headers
+          >
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.firstName }}</td>
+              <td class="text-xs-right">{{ props.item.lastName }}</td>
+              <td class="text-xs-right">{{ props.item.fullName }}</td>
+              <td>
+                <v-checkbox 
+                  v-model="props.selected"
+                  :disabled ="!props.selected && selected.length != 0"
+                  :indeterminate = "!props.selected && selected.length != 0"
+                  primary
+                ></v-checkbox>
+              </td>
+            </template>
+          </v-data-table>
+
           <v-select 
             label="Role" 
             :items="roles" 
@@ -36,7 +52,7 @@
           
           <v-spacer></v-spacer>
 
-          <v-btn flat class="success mx-0 mt-3" @click="submit" :loading="loading">Edit Task</v-btn>
+          <v-btn flat class="success mx-0 mt-3" @click="submit" :loading="loading">Edit Member</v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -52,11 +68,11 @@ export default {
   props: ['teamId'],
   data() {
     return {
-      memberName: '',
+      candidates: [],
       role: '',
       search: '',
+      selected: [],
       roles: ['Designer', 'Web Developer', 'QA', 'Leader'],
-      teamId: this.teamId,
       inputRules: [
         v => !!v || 'This field is required',
         v => v && v.length >= 3 || 'Minimum length is 3 characters'
@@ -66,18 +82,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['editMembers']),
     searchMember() {
-      if(this.$refs.form.validate()) {
-        search = this.search;
+        const search = this.search;
         const db = firebase.firestore();
 
-        db.collections('users').where('firstName','==', search).get()
-          .then(doc => {
-            console.log(doc.data().firstName, doc.data().initials)
+        db.collection('users').where('firstName','==', search).get()
+          .then(querySnapshot => {
+            return querySnapshot.forEach(doc => {
+              const newCandidate = { ...doc.data() };
+              this.candidates.push(newCandidate);
+            });
           })
-          .catch(error => console.log('Addmember error: ', error.message))
-      }
+          .catch(error => console.log('Searchmember error: ', error.message))
     },
     submit() {
       if(this.$refs.form.validate()) {
@@ -86,15 +102,15 @@ export default {
 
         const member = {
           teamId: this.teamId,
-          member: {
-            memberName: this.memberName,
-            role: this.role
-          }
+          memberName: this.selectRow,
+          role: this.role
         };
         
-        //user edit member
+        //user add member
+        console.log('member: ', member);
         this.$store.dispatch('editMembers', { member });
         memberForm.reset();
+        this.candidates = {};
           
         this.loading = false;
         this.dialog = false;
@@ -102,11 +118,13 @@ export default {
     }
   },
   computed: {
-    ...mapState(['members']),
-    // filteredMembers() {
-    //   return teams.members.filter(member => (member.firsName + member.lastName).match(this.search) )
-    // }
+    ...mapState(['user']),
+    selectRow() {
+      const selectedRow = this.selected[0];
+      return selectedRow ? `${selectedRow.fullName}` : 'No data selected';
+    }
   }
 }
 </script>
+
 

@@ -31,7 +31,7 @@
                 <span class="black--text">{{ item.team.teamName }}</span>
               </h3>
               <v-flex text-xs-right>
-                <Editteam v-bind:teamId="item.id" />
+                <Editteam :teamId="item.id" />
                 <v-btn small flat icon  left color="grey" @click="deleteTeam(item.id)">
                   <v-icon>delete</v-icon>
                 </v-btn>
@@ -41,45 +41,33 @@
               <div class="ml-3 mb-2">
                 <Addmember :teamId="item.id" />
               </div>
-          
-              <div class="ml-3 mb-2">
-                <Editmember :teamId="item.id" />
-                <v-btn small class="red lighten-2 white--text" @click="deleteMembers">
-                  <span>Delete Member</span>
-                  <v-icon right>delete</v-icon>
-                </v-btn>
-              </div>
+
+              <v-data-table
+                :headers="headers"
+                :items="teams"
+                class="elevation-1 mt-3"
+                hide-actions
+              >
+                <template v-slot:headers="props">
+                  <th
+                    v-for="header in props.headers"
+                    :key="header.text"
+                  >{{ header.text }}</th>
+                </template>
+
+                <template slot="items" slot-scope="props">
+                  <td>{{ props.item.memberName }}</td>
+                  <td class="text-xs-right">{{ props.item.role }}</td>
+                  <td class="text-xs-right">
+                    <Editmember :teamId="item.id" />
+                    <v-btn small flat icon  left color="grey" @click="deleteMembers">
+                      <v-icon right>delete</v-icon>
+                    </v-btn>
+                  </td>
+                </template>
+              </v-data-table>
             </v-card-text>
           </v-card>
-
-
-          
-          <!-- <v-card flat class="text-xs-center ma-3" v-for="(item,index) in teams" :key="index">
-            <v-card-title >
-              <h3 class="subheading grey--text text-darken-4">Current Team</h3>
-              <h4>{{ item.teamName }}</h4>
-            </v-card-title> 
-            
-            <div class="ml-3 mb-2">
-              <Editeam @teamEdited="snackbar=true" />
-              <v-btn class="red lighten-2 white--text" @click="deleteTeams">
-                <span>Delete</span>
-                <v-icon right>delete_forever</v-icon>
-              </v-btn>
-            </div>
-          
-            <v-card-text v-for="(team,index) in item" :key="index">
-              <div class="subheading">{{ team.member.memberName }}</div>
-              <div class="blue--text">{{ team.member.role }}</div>
-            </v-card-text> 
-            
-            <v-card-actions>
-              <v-btn flat color="grey">
-                <v-icon small left>message</v-icon>
-                <span>Message</span>
-              </v-btn>
-            </v-card-actions>
-          </v-card> -->
            
         </v-flex>
       </v-layout>
@@ -104,6 +92,21 @@ export default {
   data() {
     return {
       teamName: '',
+      headers: [
+        {
+          text: 'First Name', 
+          align: left,
+          value: 'name'
+        },
+        {
+          text: 'Role', 
+          value: 'role'
+        },
+        {
+          text: 'Actions', 
+          value: 'name'
+        }
+      ],
       snackbar: false,
       inputRules: [
         v => !!v || 'This field is required',
