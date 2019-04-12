@@ -21,11 +21,11 @@
               </v-text-field>
               <v-btn flat class="success" @click="addTeam">
                 <span>Add Team</span>
-                <v-icon right>add</v-icon>
+                <v-icon right>add_circle</v-icon>
               </v-btn>
             </v-form>
           </div>
-          <v-card flat class="text-xs-center ma-3" v-for="item in teams" :key="item.id">
+          <v-card flat class="text-xs-center pt-1" v-for="item in teams" :key="item.id">
             <v-card-title >
               <h3 class="subheading grey--text text-darken-4">Current Team: 
                 <span class="black--text">{{ item.team.teamName }}</span>
@@ -38,13 +38,13 @@
               </v-flex>
             </v-card-title>
             <v-card-text>
-              <div class="ml-3 mb-2">
+              <div class="ml-3 mb-2 mt-1">
                 <Addmember :teamId="item.id" />
               </div>
 
               <v-data-table
                 :headers="headers"
-                :items="teams"
+                :items="teamMembers(item.id)"
                 class="elevation-1 mt-3"
                 hide-actions
               >
@@ -56,12 +56,12 @@
                 </template>
 
                 <template slot="items" slot-scope="props">
-                  <td>{{ props.item.memberName }}</td>
-                  <td class="text-xs-right">{{ props.item.role }}</td>
-                  <td class="text-xs-right">
+                  <td>{{ props.item.member.memberName }}</td>
+                  <td>{{ props.item.member.role }}</td>
+                  <td>
                     <Editmember :teamId="item.id" />
-                    <v-btn small flat icon  left color="grey" @click="deleteMembers">
-                      <v-icon right>delete</v-icon>
+                    <v-btn small flat icon color="grey" @click="deleteMembers">
+                      <v-icon>delete</v-icon>
                     </v-btn>
                   </td>
                 </template>
@@ -94,8 +94,8 @@ export default {
       teamName: '',
       headers: [
         {
-          text: 'First Name', 
-          align: left,
+          text: 'Full Name', 
+          align: 'left',
           value: 'name'
         },
         {
@@ -132,11 +132,15 @@ export default {
     deleteTeam(id) {
       console.log('id: ', id);
       this.$store.dispatch('deleteTeams', id);
-    }
+    },
+    teamMembers: function (id) {
+      return this.$store.state.members.filter(member => member.teamId == id)
+    },
   },
   computed: {
-    ...mapState(['teams']),
+    ...mapState(['teams', 'members']),
     ...mapGetters(['isAuthenticated']),
+
     isAdmin() {
       return true;
     }

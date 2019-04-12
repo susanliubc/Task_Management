@@ -11,8 +11,7 @@ export default new Vuex.Store({
     state: {
         tasks: [],
         teams: [],
-        changeTask: {},
-        changeTeam: {},
+        members: [],
         user: null,
         isAuthenticated: false
     },
@@ -24,7 +23,7 @@ export default new Vuex.Store({
             state.teams = payload;
         },
         setMembers(state, payload) {
-            state.teams.members = payload;
+            state.members = payload;
         },
         setUser(state, payload) {
             state.user = payload;
@@ -41,7 +40,7 @@ export default new Vuex.Store({
                     db.collection('users').doc(cred.user.uid).set({
                        firstName: firstName,
                        lastName: lastName,
-                       initials: firstName[0] + lastName[0]
+                       fullName: firstName + lastName
                     });
                     console.log('cred: ', cred);
                     commit('setUser', cred);
@@ -70,6 +69,9 @@ export default new Vuex.Store({
                     commit('setIsAuthenticated', false);
                 })
                 .catch(err => console.log('Logout Error: ', err.message));
+        },
+        Login({ commit }) {
+            commit('setIsAuthenticated', true);
         },
         addTasks({ state }, task) {
             db.collection('users').doc(state.user.id).collection('tasks').add(task);
@@ -174,8 +176,8 @@ export default new Vuex.Store({
                     console.log(team);
                 }).catch(err => console.log('Getteam Error: ', err.message))   
         },
-        getMembers({ state, commit }) {
-            db.collection('teams').doc(state.teams.id).collection('members').get()
+        getMembers({ commit }) {
+            db.collection('members').get()
                 .then(res => {
                     let changes = res.docChanges();   
 
@@ -202,11 +204,11 @@ export default new Vuex.Store({
                 })
                 .then(member => {
                     commit('setMembers', member);
-                    console.log(member);
+                    console.log('member: ', member);
                 }).catch(err => console.log('Getmember Error: ', err.message))   
         }
     },
     getters: {
-        isAuthenticated:  state => state.isAuthenticated  
+        isAuthenticated:  state => state.isAuthenticated
     }
 });

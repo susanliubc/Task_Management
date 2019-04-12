@@ -30,17 +30,17 @@
               <td>{{ props.item.firstName }}</td>
               <td class="text-xs-right">{{ props.item.lastName }}</td>
               <td class="text-xs-right">{{ props.item.fullName }}</td>
-              <td class="justify-center">
+              <td>
                 <v-checkbox 
                   v-model="props.selected"
+                  :indeterminate="!props.selected && selected.length != 0"
                   :disabled ="!props.selected && selected.length != 0"
-                  :indeterminate = "!props.selected && selected.length != 0"
                   primary
                 ></v-checkbox>
               </td>
             </template>
           </v-data-table>
-
+          <h3>{{ selectRow }}</h3>
           <v-select 
             label="Role" 
             :items="roles" 
@@ -87,8 +87,9 @@ export default {
         db.collection('users').where('firstName','==', search).get()
           .then(querySnapshot => {
             return querySnapshot.forEach(doc => {
-              const newCandidate = { ...doc.data() };
+              const newCandidate = { ...doc.data(), id: doc.id };
               this.candidates.push(newCandidate);
+              console.log('candidate: ', this.candidates);
             });
           })
           .catch(error => console.log('Searchmember error: ', error.message))
@@ -100,13 +101,16 @@ export default {
 
         const member = {
           teamId: this.teamId,
-          memberName: this.selectRow,
-          role: this.role
+          member: {
+            memberName: this.selectRow,
+            role: this.role
+          }
         };
         
         //user add member
         console.log('member: ', member);
-        this.$store.dispatch('addMembers', { member });
+        console.log('selected: ', selected);
+        //this.$store.dispatch('addMembers', { member });
         memberForm.reset();
         this.candidates = {};
           
@@ -124,5 +128,10 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+  .v-input--selection-controls { 
+    padding-top: 23px; 
+    margin-left: 150px;
+  }
+</style>
 
