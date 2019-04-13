@@ -40,7 +40,7 @@
               </td>
             </template>
           </v-data-table>
-          <h3>{{ selectRow }}</h3>
+          <h3 class="mt-3">{{ selectRow }}</h3>
           <v-select 
             label="Role" 
             :items="roles" 
@@ -84,7 +84,7 @@ export default {
         const search = this.search;
         const db = firebase.firestore();
 
-        db.collection('users').where('firstName','==', search).get()
+        db.collection('users').orderBy('firstName').startAt(search).endAt(search+ "\uf8ff").get()
           .then(querySnapshot => {
             return querySnapshot.forEach(doc => {
               const newCandidate = { ...doc.data(), id: doc.id };
@@ -101,16 +101,14 @@ export default {
 
         const member = {
           teamId: this.teamId,
-          member: {
-            memberName: this.selectRow,
-            role: this.role
-          }
+          memberName: this.selectRow,
+          role: this.role
         };
         
         //user add member
         console.log('member: ', member);
-        console.log('selected: ', selected);
-        //this.$store.dispatch('addMembers', { member });
+        console.log('selected: ', this.selected);
+        this.$store.dispatch('addMembers', { member });
         memberForm.reset();
         this.candidates = {};
           

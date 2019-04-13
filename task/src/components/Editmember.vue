@@ -86,7 +86,7 @@ export default {
         const search = this.search;
         const db = firebase.firestore();
 
-        db.collection('users').where('firstName','==', search).get()
+        db.collection('users').orderBy('firstName').startAt(search).endAt(search+ "\uf8ff").get()
           .then(querySnapshot => {
             return querySnapshot.forEach(doc => {
               const newCandidate = { ...doc.data() };
@@ -99,16 +99,16 @@ export default {
       if(this.$refs.form.validate()) {
         this.loading = true;
         const memberForm = this.$refs.form;
-
+        const id = this.id.toString();
         const member = {
-          teamId: this.teamId,
+          teamId: this.teamId.toString(),
           memberName: this.selectRow,
           role: this.role
         };
         
         //user add member
         console.log('member: ', member);
-        this.$store.dispatch('editMembers', { member });
+        this.$store.dispatch('editMembers', { member, id });
         memberForm.reset();
         this.candidates = {};
           
@@ -126,5 +126,10 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+  .v-input--selection-controls { 
+    padding-top: 23px; 
+    margin-left: 150px;
+  }
+</style>
 

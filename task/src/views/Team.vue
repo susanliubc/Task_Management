@@ -28,7 +28,7 @@
           <v-card flat class="text-xs-center pt-1" v-for="item in teams" :key="item.id">
             <v-card-title >
               <h3 class="subheading grey--text text-darken-4">Current Team: 
-                <span class="black--text">{{ item.team.teamName }}</span>
+                <span class="black--text">{{ item.teamName }}</span>
               </h3>
               <v-flex text-xs-right>
                 <Editteam :teamId="item.id" />
@@ -56,11 +56,11 @@
                 </template>
 
                 <template slot="items" slot-scope="props">
-                  <td>{{ props.item.member.memberName }}</td>
-                  <td>{{ props.item.member.role }}</td>
+                  <td>{{ props.item.memberName }}</td>
+                  <td>{{ props.item.role }}</td>
                   <td>
-                    <Editmember :teamId="item.id" />
-                    <v-btn small flat icon color="grey" @click="deleteMembers">
+                    <Editmember :teamId="item.id" :id="props.item.id"/>
+                    <v-btn small flat icon color="grey" @click="deleteMember(props.item.id)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </td>
@@ -94,7 +94,7 @@ export default {
       teamName: '',
       headers: [
         {
-          text: 'Full Name', 
+          text: 'Member Name', 
           align: 'left',
           value: 'name'
         },
@@ -115,7 +115,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['deleteMembers', 'getTeams','getMembers']),
+    ...mapActions(['getTeams','getMembers']),
     addTeam() {
       if(this.$refs.form.validate()) {
         const teamForm = this.$refs.form;
@@ -127,14 +127,17 @@ export default {
         this.$store.dispatch('addTeams', { team });
         teamForm.reset();
       }
-    },
-    
+    }, 
     deleteTeam(id) {
-      console.log('id: ', id);
+      console.log('Teamid: ', id);
       this.$store.dispatch('deleteTeams', id);
     },
     teamMembers: function (id) {
       return this.$store.state.members.filter(member => member.teamId == id)
+    },
+    deleteMember(id) {
+      console.log('Memberid: ', id);
+      this.$store.dispatch('deleteMembers', id);
     },
   },
   computed: {

@@ -58,18 +58,16 @@ export default {
       if(this.$refs.form.validate()) {
         this.loading = true;
         const taskForm = this.$refs.form;
+        const id = this.id.toString();
         const task = {
-          id: this.id,
-          task: {
             title: this.title, 
             content: this.content,
             dueDate: this.dueDate,
-            status: this.status
-          }
+            status: this.status,
         };
 
         //user edit task
-        this.$store.dispatch('editTasks', { task });
+        this.$store.dispatch('editTasks', { task, id });
         taskForm.reset();
 
         this.loading = false;

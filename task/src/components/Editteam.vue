@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       teamName: '',
-      teamId: this.teamId,
       inputRules: [
         v => !!v || 'This field is required',
         v => v && v.length >= 3 || 'Minimum length is 3 characters'
@@ -48,15 +47,13 @@ export default {
     editTeam(id) {
       if(this.$refs.form.validate()) {
         const teamForm = this.$refs.form;
+        const id = this.teamId.toString();
         const team = {
-          id: this.teamId,
-          team: {
             teamName: this.teamName,
-          }
         };
         
         //user edit team
-        this.$store.dispatch('editTeams', { team });
+        this.$store.dispatch('editTeams', { team, id });
         teamForm.reset();
       }
     },
