@@ -9,6 +9,13 @@
       </v-card-title>
       <v-card-text>
         <v-form class="px-3 grey--text text-darken-3" ref="form">
+          <v-select 
+            label="Team" 
+            :items="teams"
+            item-text="teamName"
+            v-model="teamName"
+            prepend-icon="group">
+          </v-select>
           <v-text-field label="Title" v-model="title" :rules="inputRules" prepend-icon="folder">
           </v-text-field>
           <v-textarea label="Content" v-model="content" :rules="inputRules" prepend-icon="edit">
@@ -33,7 +40,7 @@
 
 <script>
 import format from 'date-fns/format';
-import firebase from '@/fb';
+import { mapState } from 'vuex';
 
 export default {
   data() {
@@ -43,6 +50,7 @@ export default {
       dueDate: null,
       status: '',
       items: ['Todo', 'Ongoing', 'Done'],
+      teamName: [],
       menu: false,
       inputRules: [
         v => !!v || 'This field is required',
@@ -60,6 +68,8 @@ export default {
         const taskForm = this.$refs.form;
         const id = this.id.toString();
         const task = {
+            teamName: this.teamName,
+            memberName: this.currentUser.fullName,
             title: this.title, 
             content: this.content,
             dueDate: this.dueDate,
@@ -78,6 +88,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['teams']),
     formattedDate() {
       return this.dueDate ? format(this.dueDate, 'Do MMM YYYY'): ''
     }

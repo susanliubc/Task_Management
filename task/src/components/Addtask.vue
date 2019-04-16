@@ -14,6 +14,7 @@
             v-model="teamName"
             prepend-icon="group">
           </v-select>
+
           <v-text-field 
             label="Title" 
             v-model="title" 
@@ -43,7 +44,7 @@
             </v-text-field>
             <v-date-picker v-model="dueDate"></v-date-picker>
           </v-menu>
-
+          <h3>CurrentUser: {{ currentUser }}</h3>
           <v-spacer></v-spacer>
 
           <v-btn flat class="success mx-0 mt-3" @click="submit" :loading="loading">Add Task</v-btn>
@@ -56,6 +57,7 @@
 <script>
 import format from 'date-fns/format';
 import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   data() {
@@ -76,13 +78,14 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getTeams']),
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;
         const taskForm = this.$refs.form;
         const task = {
           teamName: this.teamName,
-          memberName: this.$store.state.user.fullName,
+          memberName: this.currentUser.fullName,
           title: this.title, 
           content: this.content,
           dueDate: this.dueDate,
@@ -90,6 +93,8 @@ export default {
         };
         
         //user add task
+        console.log('Currentuser: ', this.currentUser);
+        console.log('task: ', task);
         this.$store.dispatch('addTasks', { task });
         taskForm.reset();
           
@@ -100,9 +105,15 @@ export default {
   },
   computed: {
     ...mapState(['teams']),
+    currentUser() {
+      return this.$store.state.user;
+    },
     formattedDate() {
       return this.dueDate ? format(this.dueDate, 'Do MMM YYYY'): ''
     }
+  },
+  created() {
+    this.getTeams();
   }
 }
 </script>

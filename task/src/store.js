@@ -40,7 +40,7 @@ export default new Vuex.Store({
                     db.collection('users').doc(cred.user.uid).set({
                        firstName: firstName,
                        lastName: lastName,
-                       fullName: firstName + lastName
+                       fullName: firstName + ' ' + lastName
                     });
                     console.log('cred: ', cred);
                     commit('setUser', cred);
@@ -76,15 +76,15 @@ export default new Vuex.Store({
         addTasks({}, task) {
             db.collection('tasks').add(task);
         },
-        addTeams({}, team) {
-            db.collection('teams').add(team);
+        addTeams({}, teamName) {
+            db.collection('teams').add(teamName);
         },
         addMembers({}, { member }) {
             console.log('Member: ', member);
             db.collection('members').add(member);
         },
         editTasks({}, { task, id }) {
-            db.collection('tasks').doc(id).set(task)
+            db.collection('tasks').doc(id).set(task.task)
                 .then(() => console.log("Task successfully edited!"))
                 .catch(err => console.log('Edittask Error: ', err.message)) 
         },
@@ -209,6 +209,8 @@ export default new Vuex.Store({
         }
     },
     getters: {
-        isAuthenticated:  state => state.isAuthenticated
+        isAuthenticated:  state => state.isAuthenticated,
+        //isAuthenticated:  state => state.user !== null || state.user !== undefined,
+        user: state => state.user
     }
 });

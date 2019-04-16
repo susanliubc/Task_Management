@@ -65,7 +65,7 @@ import { mapState } from 'vuex';
 import firebase from '@/fb.js';
 
 export default {
-  props: ['teamId'],
+  props: ['teamId', 'id'],
   data() {
     return {
       candidates: [],
@@ -89,7 +89,7 @@ export default {
         db.collection('users').orderBy('firstName').startAt(search).endAt(search+ "\uf8ff").get()
           .then(querySnapshot => {
             return querySnapshot.forEach(doc => {
-              const newCandidate = { ...doc.data() };
+              const newCandidate = { ...doc.data(), id: doc.id };
               this.candidates.push(newCandidate);
             });
           })
@@ -101,13 +101,14 @@ export default {
         const memberForm = this.$refs.form;
         const id = this.id.toString();
         const member = {
-          teamId: this.teamId.toString(),
+          teamId: this.teamId,
           memberName: this.selectRow,
           role: this.role
         };
         
         //user add member
         console.log('member: ', member);
+        console.log('id: ', id);
         this.$store.dispatch('editMembers', { member, id });
         memberForm.reset();
         this.candidates = {};

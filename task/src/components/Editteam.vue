@@ -49,12 +49,13 @@ export default {
         const teamForm = this.$refs.form;
         const id = this.teamId.toString();
         const team = {
-            teamName: this.teamName,
+          teamName: this.teamName
         };
         
         //user edit team
         this.$store.dispatch('editTeams', { team, id });
         teamForm.reset();
+        this.dialog = false;
       }
     },
   },

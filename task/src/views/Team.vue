@@ -119,12 +119,11 @@ export default {
     addTeam() {
       if(this.$refs.form.validate()) {
         const teamForm = this.$refs.form;
-        const team = {
-          teamName: this.teamName,
-        };
+        const teamName = this.teamName;
         
         //user add team
-        this.$store.dispatch('addTeams', { team });
+        console.log('team: ', teamName)
+        this.$store.dispatch('addTeams', { teamName });
         teamForm.reset();
       }
     }, 
