@@ -119,11 +119,12 @@ export default {
     addTeam() {
       if(this.$refs.form.validate()) {
         const teamForm = this.$refs.form;
-        const teamName = this.teamName;
-        
+        const team = {
+          teamName: this.teamName
+        };
         //user add team
-        console.log('team: ', teamName)
-        this.$store.dispatch('addTeams', { teamName });
+        console.log('team: ', team);
+        this.$store.dispatch('addTeams', { team });
         teamForm.reset();
       }
     }, 
@@ -137,6 +138,7 @@ export default {
     deleteMember(id) {
       console.log('Memberid: ', id);
       this.$store.dispatch('deleteMembers', id);
+      console.log('Memberid:after ', id);
     },
   },
   computed: {
@@ -148,6 +150,10 @@ export default {
     }
   },
   created() {
+    this.getTeams();
+    this.getMembers();
+  },
+  mounted() {
     this.getTeams();
     this.getMembers();
   },

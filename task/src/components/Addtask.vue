@@ -44,7 +44,7 @@
             </v-text-field>
             <v-date-picker v-model="dueDate"></v-date-picker>
           </v-menu>
-          <h3>CurrentUser: {{ currentUser }}</h3>
+
           <v-spacer></v-spacer>
 
           <v-btn flat class="success mx-0 mt-3" @click="submit" :loading="loading">Add Task</v-btn>
@@ -58,6 +58,7 @@
 import format from 'date-fns/format';
 import { mapState } from 'vuex';
 import { mapActions } from 'vuex';
+import firebase from 'firebase';
 
 export default {
   data() {
@@ -78,14 +79,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getTeams']),
+    ...mapActions(['getTeams', 'getCurrentUser']),
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;
         const taskForm = this.$refs.form;
         const task = {
           teamName: this.teamName,
-          memberName: this.currentUser.fullName,
+          memberName: this.$store.state.currentUser.fullName,
           title: this.title, 
           content: this.content,
           dueDate: this.dueDate,
@@ -104,16 +105,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['teams']),
-    currentUser() {
-      return this.$store.state.user;
-    },
+    ...mapState(['teams', 'currentUser']),
     formattedDate() {
       return this.dueDate ? format(this.dueDate, 'Do MMM YYYY'): ''
     }
   },
   created() {
     this.getTeams();
+    this.getCurrentUser();
   }
 }
 </script>

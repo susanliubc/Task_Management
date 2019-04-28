@@ -13,6 +13,7 @@ export default new Vuex.Store({
         teams: [],
         members: [],
         user: null,
+        currentUser: null,
         isAuthenticated: false
     },
     mutations: {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
         },
         setUser(state, payload) {
             state.user = payload;
+        },
+        setCurrentUser(state, payload) {
+            state.currentUser = payload;
         },
         setIsAuthenticated(state, payload) {
             state.isAuthenticated = payload;
@@ -73,144 +77,106 @@ export default new Vuex.Store({
         Login({ commit }) {
             commit('setIsAuthenticated', true);
         },
-        addTasks({}, task) {
+        addTasks({}, { task }) {
             db.collection('tasks').add(task);
         },
-        addTeams({}, teamName) {
-            db.collection('teams').add(teamName);
+        addTeams({}, { team }) {
+            db.collection('teams').add(team);
         },
         addMembers({}, { member }) {
-            console.log('Member: ', member);
             db.collection('members').add(member);
         },
         editTasks({}, { task, id }) {
-            db.collection('tasks').doc(id).set(task.task)
-                .then(() => console.log("Task successfully edited!"))
-                .catch(err => console.log('Edittask Error: ', err.message)) 
+            db.collection('tasks').doc(id).set(task.task);
         },
         editTeams({}, { team, id }) {
-            db.collection('teams').doc(id).set(team)
-                .then(() => console.log("Team successfully edited!"))
-                .catch(err => console.log('Editteam Error: ', err.message))
+            db.collection('teams').doc(id).set(team);
         },
         editMembers({}, { member, id }) {
-            db.collection('members').doc(id).set(member)
-                .then(() => console.log("Member successfully edited!"))
-                .catch(err => console.log('Editmember Error: ', err.message));
+            db.collection('members').doc(id).set(member);
         },
-        deleteTasks({}, id) {
+        deleteTasks({}, { id }) {
             console.log('store id: ', id);
-            db.collection('tasks').doc(id).delete()
-                .then(() => console.log("Task successfully deleted!"))
-                .catch(error => console.error("Deletetask Error: ", error))
+            db.collection('tasks').doc(id).delete();
         },
-        deleteTeams( {}, id ) {
+        deleteTeams({}, { id }) {
             db.collection('teams').doc(id).delete()
-                .then(() => console.log("Team successfully deleted!"))
-                .catch(error => console.error("Deleteteam Error: ", error))
         },
-        deleteMembers( {}, { id }) {
+        deleteMembers({ id }) {
+            console.log('before delete id: ', id);
             db.collection('members').doc(id).delete()
-                .then(() => console.log("Member successfully deleted!"))
-                .catch(error => console.error("Deletemember Error: ", error))
         },
         getTasks({ commit }) {
             db.collection('tasks').get().then(res => {
-                    let changes = res.docChanges();   
-
-                    return changes.map(change => {
-                        let docId= change.doc.id;
-                        let tasks = {};
-
-                        if(change.type === 'added') {
-                            return tasks = {
-                                ...change.doc.data(),
-                                id: docId
-                            };
-                        }
-                        if(change.type === 'modified') {
-                            return tasks.map(task => 
-                                task.id === docId ? task.task = change.doc.data(): task    
-                            );
-                        }
-                        if(change.type === 'removed') {
-                            return tasks.filter(task => task.id !== docId);
-                        }   
-                        console.log('tasks: ', tasks);  
-                    })
+                let tasks = [];
+                res.forEach(doc => {    
+                    const task = {
+                        ...doc.data(),
+                        id: doc.id
+                    };
+                    return tasks.push(task);
                 })
-                .then(task => {
-                    commit('setTasks', task);
-                    console.log(task);
-                })
-                .catch(err => console.log('Gettask Error: ', err.message))
+                console.log('tasks: ', tasks);
+                commit('setTasks', tasks);
+            }).catch(err => console.log('Gettask Error: ', err.message))
         },
         getTeams({ commit }) {
-            db.collection('teams').get()
-                .then(res => {
-                    let changes = res.docChanges();   
-
-                    return changes.map(change => {
-                        let docId= change.doc.id;
-                        let teams = {};
-
-                        if(change.type === 'added') {
-                            return teams = {
-                                ...change.doc.data(),
-                                id: docId
-                            };
-                        }
-                        if(change.type === 'modified') {
-                            return teams.map(team => 
-                                team.id === docId ? team.team = change.doc.data(): team    
-                            );
-                        }
-                        if(change.type === 'removed') {
-                            return teams.filter(team => team.id !== docId);
-                        }   
-                        console.log('teams: ', teams);   
-                    })
+            db.collection('teams').get().then(res => {
+                let teams = [];
+                res.forEach(doc => {    
+                    const team = {
+                        ...doc.data(),
+                        id: doc.id
+                    };
+                    return teams.push(team);
                 })
-                .then(team => {
-                    commit('setTeams', team);
-                    console.log(team);
-                }).catch(err => console.log('Getteam Error: ', err.message))   
+                console.log('teams: ', teams);
+                commit('setTeams', teams);
+            }).catch(err => console.log('Getteam Error: ', err.message))
         },
         getMembers({ commit }) {
-            db.collection('members').get()
-                .then(res => {
-                    let changes = res.docChanges();   
-
-                    return changes.map(change => {
-                        let docId= change.doc.id;
-                        let members = {};
-
-                        if(change.type === 'added') {
-                            return members = {
-                                ...change.doc.data(),
-                                id: docId
-                            };
-                        } 
-                        if(change.type === 'modified') {
-                            return members.map(member => 
-                                member.id === docId ? member.member = change.doc.data(): member    
-                            );
-                        }
-                        if(change.type === 'removed') {
-                            return members.filter(member => member.id !== docId);
-                        }   
-                        console.log('members: ', members);  
-                    })
+            db.collection('members').get().then(res => {
+                let members = [];
+                res.forEach(doc => {    
+                    const member = {
+                        ...doc.data(),
+                        id: doc.id
+                    };
+                    return members.push(member);
                 })
-                .then(member => {
-                    commit('setMembers', member);
-                    console.log('member: ', member);
-                }).catch(err => console.log('Getmember Error: ', err.message))   
+                console.log('members: ', members);
+                commit('setMembers', members);
+            }).catch(err => console.log('Getmember Error: ', err.message))
+        },
+        getUsers({ commit }) {
+            db.collection('users').get().then(res => {
+                let users = [];
+                res.forEach(doc => {    
+                    const user = {
+                        ...doc.data(),
+                        id: doc.id
+                    };
+                    return users.push(user);
+                });
+                console.log('users: ', users);
+                commit('setUser', users);
+            }).catch(err => console.log('Getuser Error: ', err.message))
+        },
+        getCurrentUser({ commit }) {
+            const user = auth.currentUser;
+            if(user) {
+                db.collection('users').doc(user.uid).get()
+                .then(doc => {
+                  const currentUser = {...doc.data()};
+                  console.log('CurrentUser: ', currentUser);
+                  commit('setCurrentUser', currentUser);
+                })
+                .catch(err => console.log('currentUser error', err.message))
+            }
         }
     },
     getters: {
         isAuthenticated:  state => state.isAuthenticated,
-        //isAuthenticated:  state => state.user !== null || state.user !== undefined,
-        user: state => state.user
+        //isAuthenticated:  state => state.currentUser !== null || state.currentUser !== undefined,
     }
 });

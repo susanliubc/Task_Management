@@ -6,6 +6,14 @@
     </v-snackbar>
     <h1 class="subheading grey--text text-darken-4">Tasks</h1>
     <v-container class="my-5">
+      <v-layout column align-center>
+        <v-flex class="mt-2">
+            <p class="teal--text text-xs-center subheading mt-1">{{ currentUser .firstName }}</p>
+        </v-flex>
+        <v-flex class="mt-1 mb-3">
+            <Addtask @taskAdded="snackbar=true" />
+        </v-flex>
+      </v-layout>
       <v-expansion-panel>
         <v-expansion-panel-content v-for="item in tasks" :key="item.id">
           <v-layout row slot="header" class="py-1" align-center>
@@ -33,12 +41,14 @@
 </template>
 
 <script>
+import Addtask from '../components/Addtask.vue';
 import Edittask from '../components/Edittask.vue';
 import { mapState } from 'vuex';
 import { mapActions } from 'vuex';
 
 export default {
   components: { 
+    Addtask,
     Edittask
   },
   data() {
@@ -47,20 +57,25 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getTasks']),
+    ...mapActions(['getTasks', 'getCurrentUser']),
     deleteTask(id) {
       console.log('id: ', id);
       this.$store.dispatch('deleteTasks', id);
     }
   },
   computed: {
-    ...mapState(['tasks']),
+    ...mapState(['tasks', 'currentUser']),
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     }
   },
   created() {
     this.getTasks();
+    this.getCurrentUser();
+  },
+  mounted() {
+    this.getTasks();
+    this.getCurrentUser();
   },
 }
 </script>

@@ -30,9 +30,9 @@
           >
             <template slot="items" slot-scope="props">
               <td>{{ props.item.firstName }}</td>
-              <td class="text-xs-right">{{ props.item.lastName }}</td>
-              <td class="text-xs-right">{{ props.item.fullName }}</td>
-              <td>
+              <td>{{ props.item.lastName }}</td>
+              <td>{{ props.item.fullName }}</td>
+              <td class="text-xs-right">
                 <v-checkbox 
                   v-model="props.selected"
                   :disabled ="!props.selected && selected.length != 0"
@@ -62,7 +62,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { mapState } from 'vuex';
-import firebase from '@/fb.js';
+import firebase from './fb.js';
 
 export default {
   props: ['teamId', 'id'],
@@ -82,6 +82,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getUsers']),
     searchMember() {
         const search = this.search;
         const db = firebase.firestore();
@@ -124,13 +125,16 @@ export default {
       const selectedRow = this.selected[0];
       return selectedRow ? `${selectedRow.fullName}` : 'No data selected';
     }
+  },
+  created() {
+    this.getUsers()
   }
 }
 </script>
 <style scoped>
   .v-input--selection-controls { 
     padding-top: 23px; 
-    margin-left: 150px;
+    margin-left: 50px;
   }
 </style>
 

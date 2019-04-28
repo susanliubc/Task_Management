@@ -12,7 +12,7 @@
                 <span class="font-weight-light">Management</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <div v-if="isAuthenticated" class="hidden-sm-and-down">
+            <div v-if="isAuthenticated">
                <v-menu offset-y>
                     <v-btn flat slot="activator" color="grey">
                         <v-icon left>expand_more</v-icon>
@@ -30,24 +30,14 @@
                 <Signup />
             </div>
             <div v-if="isAuthenticated">
-                <v-btn flat color="blue" @submit.prevent="signOut">
-                <span>Sign Out</span>
-                <v-icon right>exit_to_app</v-icon>
+                <v-btn flat color="blue" @click="signOut">
+                    <span>Sign Out</span>
+                    <v-icon right>exit_to_app</v-icon>
                 </v-btn>
             </div>
         </v-toolbar>
-        <v-navigation-drawer app v-model="drawer" :value="isAuthenticated" class="primary">
-            <v-layout column align-center>
-                <v-flex class="mt-5">
-                    <v-avatar size="100">
-                        <img class="text-lg-center" src="/avatar_1.png">
-                    </v-avatar>
-                    <p class="white--text text-xs-center subheading mt-1">Tom</p>
-                </v-flex>
-                <v-flex class="mt-2 mb-2">
-                    <Addtask @taskAdded="snackbar=true" />
-                </v-flex>
-            </v-layout>
+        <v-navigation-drawer app v-model="drawer" class="primary">
+            
             <v-list>
                 <v-list-tile v-for="link in links" :key="link.text" router :to="link.route">
                     <v-list-tile-action>
@@ -65,13 +55,14 @@
 </template>
 
 <script>
-import Addtask from './Addtask.vue';
 import Signup from './Signup.vue';
 import Login from './Login.vue';
+import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
     components: { 
-        Addtask,
         Signup,
         Login 
     },
@@ -87,14 +78,14 @@ export default {
         }
     },
     computed: {
-        isAuthenticated() {
-            return this.$store.getters.isAuthenticated;
-        }
+        ...mapGetters(['isAuthenticated']),
+        ...mapState(['teams']),
     },
     methods: {
-        signOut() {
+        signOut(e) {
+            e.preventDefault();
             this.$store.dispatch('userSignout');
         }
-    }
+    }, 
 }
 </script>

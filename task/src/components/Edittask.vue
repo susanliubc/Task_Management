@@ -41,6 +41,7 @@
 <script>
 import format from 'date-fns/format';
 import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   data() {
@@ -62,6 +63,7 @@ export default {
   },
   props: ['id'],
   methods: {
+    ...mapActions(['getTeams', 'getUsers']),
     submit() {
       if(this.$refs.form.validate()) {
         this.loading = true;
@@ -88,10 +90,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['teams']),
+    ...mapState(['teams', 'users']),
     formattedDate() {
       return this.dueDate ? format(this.dueDate, 'Do MMM YYYY'): ''
     }
+  },
+  created() {
+    this.getTeams();
+    this.getUsers();
   }
 }
 </script>
