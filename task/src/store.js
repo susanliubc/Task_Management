@@ -120,6 +120,20 @@ export default new Vuex.Store({
                 commit('setTasks', tasks);
             }).catch(err => console.log('Gettask Error: ', err.message))
         },
+        getCurrUserTasks({ state, commit }) {
+            db.collection('tasks').where('memberName', '==', state.currentUser.fullName).get().then(res => {
+                let tasks = [];
+                res.forEach(doc => {    
+                    const task = {
+                        ...doc.data(),
+                        id: doc.id
+                    };
+                    return tasks.push(task);
+                })
+                console.log('tasks: ', tasks);
+                commit('setTasks', tasks);
+            }).catch(err => console.log('Gettask Error: ', err.message))
+        },
         getTeams({ commit }) {
             db.collection('teams').get().then(res => {
                 let teams = [];

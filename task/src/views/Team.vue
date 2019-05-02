@@ -5,7 +5,7 @@
       <v-btn flat color="white" @click="snackbar = false">Close</v-btn>
     </v-snackbar>
     <h1 class="subheading grey--text text-darken-4">Team</h1>
-    <v-container class="my-5">
+    <v-container class="my-2">
       <v-layout>
         <v-flex row xs12>
           <div class="ml-3 mb-2">
